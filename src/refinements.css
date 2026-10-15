@@ -1,0 +1,85 @@
+/* Refinements from desktop and phone browser checks. */
+.hero-art { isolation: auto; }
+.cinematic-scene { mask-image: radial-gradient(ellipse at 50% 50%, #000 53%, transparent 79%); }
+.desktop-nav a { font-size: 12px; }
+.hero-secondary { font-size: 11px; }
+.scene-mode > button { font-size: 10px; padding: 10px 14px; }
+.core-switch button { font-size: 10px; padding: 10px 14px; }
+.demo-label { font-size: 13px; }
+.sample-buttons > button { font-size: 10px; padding: 8px 11px; }
+.automation-panel textarea { font-size: 12px; }
+.demo-run { font-size: 11px; min-height: 40px; padding: 11px 14px; }
+.pipeline-step > span:nth-child(2) { font-size: 12px; }
+.pipeline-heading > span:first-child { font-size: 11px; }
+.pipeline-result > div, .pipeline-result > a { font-size: 11px; }
+.challenge-tabs button { font-size: 12px; }
+.workflow-node > span { font-size: 11px; max-width: 110px; }
+.board-topline .mono, .board-label { font-size: 8px; }
+.film-caption { font-size: 11px; }
+.method-tabs small { font-size: 10px; }
+.industry-index-item h3 { font-size: 14px; }
+.contact-form label { font-size: 12px; }
+.contact-form input, .contact-form textarea, .contact-form select { font-size: 13px; }
+.contact-form input::placeholder, .contact-form textarea::placeholder { color: #6b82a8; }
+.footer-links > a { font-size: 12px; }
+@media (max-width: 1200px) {
+  .challenge-tabs button { font-size: 10px; }
+  .workflow-node > span { font-size: 9px; }
+  .board-topline .mono, .board-label { font-size: 6px; }
+  .industry-index-item h3 { font-size: 12px; }
+  .scene-mode > button { font-size: 9px; }
+  .demo-label { font-size: 12px; }
+}
+@media (max-width: 960px) {
+  .desktop-nav a { font-size: 11px; }
+  .hero-secondary { font-size: 10px; }
+  .challenge-tabs button { font-size: 9px; }
+  .sample-buttons > button { font-size: 8px; padding: 8px; }
+  .pipeline-step > span:nth-child(2) { font-size: 10px; }
+  .pipeline-heading > span:first-child { font-size: 9px; }
+  .board-topline .mono, .board-label { font-size: 5px; }
+  .film-caption { font-size: 9px; }
+}
+@media (max-width: 700px) {
+  .hero-secondary { font-size: 9px; }
+  .hero-eyebrow { color: #a8b4cf; }
+  .scene-mode > button { font-size: 10px; padding: 12px 14px; }
+  .core-switch button { font-size: 10px; padding: 12px 14px; }
+  .live-mode .core-switch { bottom: 80px; }
+  .live-mode .core-status { bottom: 140px; }
+  .challenge-tabs button { min-height: 53px; font-size: 10px; }
+  .workflow-node > span { font-size: 9px; max-width: 75px; }
+  .board-topline .mono, .board-label { font-size: 5.5px; }
+  .demo-label { font-size: 12px; line-height: 1.6; }
+  .sample-buttons > button { font-size: 9px; padding: 9px 10px; min-height: 34px; }
+  .sample-buttons { row-gap: 7px; }
+  .automation-panel textarea { font-size: 16px; line-height: 1.65; min-height: 148px; }
+  .demo-run { font-size: 10px; padding: 11px; min-height: 42px; }
+  .demo-action-row > span { max-width: 120px; font-size: 8px; line-height: 1.7; }
+  .pipeline-heading > span:first-child { font-size: 10px; }
+  .pipeline-step { min-height: 54px; }
+  .pipeline-step > span:nth-child(2) { font-size: 11px; }
+  .pipeline-result > div, .pipeline-result > a { font-size: 10px; }
+  .pipeline-connector { height: 25px; }
+  .panel-bottom { font-size: 7px; gap: 8px; }
+  .panel-bottom > button { font-size: 9px; min-height: 36px; }
+  .method-tabs small { font-size: 7px; }
+  .method-tabs button { min-width: 35px; }
+  .method-tabs button > span { width: 35px; height: 37px; }
+  .film-caption { font-size: 8px; }
+  .industry-index-item h3 { font-size: 11px; }
+  .contact-form label { font-size: 11px; }
+  .contact-form input, .contact-form textarea, .contact-form select { font-size: 16px; }
+  .contact-form input::placeholder, .contact-form textarea::placeholder { font-size: 12px; }
+  .contact-form select { font-size: 12px; }
+  .footer-links > a { font-size: 11px; }
+}
+@media (max-width: 370px) {
+  .hero-secondary { font-size: 8px; }
+  .challenge-tabs button { font-size: 9px; }
+  .method-tabs { top: 100px; }
+  .method-tabs button { min-width: 29px; }
+  .method-tabs button > span { width: 29px; height: 34px; }
+  .method-tabs small { font-size: 6px; }
+  .industry-index-item h3 { font-size: 10px; }
+}
