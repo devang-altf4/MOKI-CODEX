@@ -19,21 +19,21 @@ export default function Framework() {
     const logo = root.querySelector<HTMLElement>('.method-fallback-mark')!, bars = [...root.querySelectorAll<HTMLElement>('.chapter-track i')], percentage = root.querySelector('.method-progress-label')!;
     const heading = root.querySelector<HTMLElement>('.method-scene-title h2')!, copy = root.querySelector<HTMLElement>('.method-scene-copy')!, number = root.querySelector<HTMLElement>('.method-big-number')!;
     const query = matchMedia('(prefers-reduced-motion: reduce)');
-    let raf = 0, last = 0, visible = false, unit = 60, centerX = 0, draws = 0, cameraTravel = 0, cameraLift = 0;
+    let raf = 0, last = 0, visible = false, unit = 60, centerX = 0, draws = 0, cameraOrigin = 0, viewportWidth = 0, stageWidth = 0, compact = false;
     const paint = (p: number) => {
       root.dataset.motionProgress = p.toFixed(5); root.dataset.motionFrames = String(++draws);
       bars.forEach((bar, index) => { bar.style.transform = `scaleX(${Math.min(1, Math.max(0, p * 4 - index))})`; });
       percentage.textContent = `${Math.round(p * 100)}%`;
       root.style.setProperty('--story-pan', `${(p - .5) * 65}px`);
       const beat = chapterMotion(p), still = query.matches;
-      const sweep = still ? 0 : beat.sweep;
-      stage.style.transform = still ? 'none' : `perspective(1600px) translate3d(${cameraTravel * sweep}px,${cameraLift * sweep}px,0) rotateY(${beat.yaw}deg) rotateZ(${beat.roll}deg) scale(${1 + sweep * .14})`;
+      const pan = compact ? (beat.pan - .5) * stageWidth * .28 : viewportWidth * beat.pan - cameraOrigin;
+      stage.style.transform = still ? 'none' : `perspective(1600px) translate3d(${pan}px,0,0) rotateY(${beat.yaw}deg) rotateZ(${beat.roll}deg) scale(${compact ? .94 + (beat.scale - 1) * .35 : beat.scale})`;
       heading.style.opacity = still ? '1' : String(beat.opacity);
       heading.style.transform = still ? 'none' : `perspective(1000px) translate3d(${beat.x}px,${beat.y}px,0) rotateX(${beat.tilt}deg)`;
       copy.style.opacity = still ? '1' : String(beat.bodyOpacity);
       copy.style.transform = still ? 'none' : `translate3d(${beat.x * .45}px,${beat.y * .6}px,0)`;
-      number.style.opacity = still ? '1' : String(1 - sweep * .85);
-      root.dataset.cameraSweep = sweep.toFixed(4);
+      number.style.opacity = still ? '1' : String(.35 + beat.opacity * .65);
+      root.dataset.scenePosition = beat.pan.toFixed(4);
       const chapter = Math.min(3, Math.floor(p * 4));
       if (chapter !== activeRef.current) { activeRef.current = chapter; setActive(chapter); }
       if (visible && !query.matches) renderer.current?.(p);
@@ -57,7 +57,9 @@ export default function Framework() {
       if (document.visibilityState !== 'visible' || !visible) return;
       const dt = last ? Math.min(.05, (now - last) / 1000) : 1 / 60; last = now;
       const state = motion.current;
-      state.value += (state.target - state.value) * (1 - Math.exp(-dt / .16));
+      // Extra scroll travel sets the pace; a speed limit softens large wheel/touch jumps.
+      const distance = (state.target - state.value) * (1 - Math.exp(-dt / .36));
+      state.value += Math.sign(distance) * Math.min(Math.abs(distance), dt * .14);
       if (Math.abs(state.target - state.value) < .00008) state.value = state.target;
       paint(state.value);
       if (state.value !== state.target) raf = requestAnimationFrame(frame);
@@ -70,16 +72,23 @@ export default function Framework() {
       else start();
     };
     const resize = () => {
-      const narrow = stage.clientWidth <= 700;
+      stageWidth = stage.clientWidth; viewportWidth = root.clientWidth;
+      const narrow = stageWidth <= 700;
+      compact = root.clientWidth <= 700 || (innerHeight <= 500 && root.clientWidth <= 960);
       const viewHeight = 2 * Math.tan(17.5 * Math.PI / 180) * (narrow ? 12 : 14);
-      unit = stage.clientHeight / viewHeight * (narrow ? .88 : 1.18); centerX = narrow ? 0 : stage.clientWidth * .17;
+      unit = stage.clientHeight / viewHeight * (narrow ? Math.min(.88, viewHeight * stageWidth / stage.clientHeight / 7.6) : 1.18); centerX = narrow ? 0 : stageWidth * .17;
       const pivot = narrow ? .5 : .67;
-      cameraTravel = root.clientWidth / 2 - (stage.offsetLeft + stage.clientWidth * pivot);
-      cameraLift = -stage.clientHeight * .035;
+      cameraOrigin = stage.offsetLeft + stage.clientWidth * pivot;
       stage.style.transformOrigin = `${pivot * 100}% 50%`;
       stage.style.setProperty('--tool-size', `${unit * 1.4}px`); paint(motion.current.value); measure();
     };
-    jump.current = p => { motion.current.target = p; if (query.matches) { motion.current.value = p; paint(p); } else start(); };
+    jump.current = p => {
+      motion.current.target = p;
+      // Tapping a chapter enters that chapter; ordinary scrolling keeps the continuous journey.
+      motion.current.value = query.matches ? p : Math.min(3, Math.floor(p * 4)) / 4;
+      paint(motion.current.value);
+      if (!query.matches) start();
+    };
     const preference = () => { setReduced(query.matches); measure(); };
     const visibility = () => { if (document.visibilityState === 'hidden') { cancelAnimationFrame(raf); raf = 0; } else measure(); };
     const observer = new ResizeObserver(resize); observer.observe(stage);
@@ -93,7 +102,7 @@ export default function Framework() {
     if (root && !reduced) window.scrollTo({ top: root.getBoundingClientRect().top + scrollY + (root.offsetHeight - innerHeight) * p, behavior: 'instant' });
   };
   const item = framework[active], headlines = [['MAP', 'the mess.'], ['LOSE', 'the friction.'], ['BUILD', 'the system.'], ['FIND', 'your flow.']];
-  return <section id="method" ref={section} className={`framework-section scroll-method ${reduced ? 'framework-reduced' : ''}`} aria-label="The MOKI framework">
+  return <section id="method" ref={section} className={`framework-section scroll-method ${reduced ? 'framework-reduced' : ''}`} data-copy-side={active === 1 ? 'right' : 'left'} aria-label="The MOKI framework">
     <div className="method-scene"><div className="method-grain" aria-hidden="true" /><MethodStage reduced={reduced} active={active} onRenderer={register} /><div className="method-vignette" aria-hidden="true" />
       <div className="method-scene-top container"><Eyebrow>FROM DISCONNECTED TO IN SYNC</Eyebrow><span className="mono">THE MOKI METHOD / 0{active + 1}</span></div>
       <div className="method-scene-title container"><h2><span>{headlines[active][0]}</span><em>{headlines[active][1]}</em></h2></div><div className="method-big-number" aria-hidden="true">0{active + 1}</div>

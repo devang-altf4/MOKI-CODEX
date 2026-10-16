@@ -24,13 +24,14 @@ The `/api/chat` handler runs on the server in both the development server and `n
 ## Experience
 
 - Scroll holds the opening scene in place, enlarges and rotates it, and reveals “One connected business.”
-- The full-screen MOKI method is a live 3D transformation. Scrolling moves physical business tools from scattered positions into an organized grid, builds their blue connections, and reveals the Moki mark. Each chapter change adds a centered camera sweep with enlargement, a gentle tilt, and a scroll-controlled heading/copy reveal. Reversing the scroll reverses both the tools and the transitions. Gentle damping smooths wheel and touch input; drawing stops when the pose settles or the section is offscreen. There is no video timer or playback control in this section. A CSS 3D fallback follows the same scroll positions if WebGL cannot load.
+- The full-screen MOKI method is a live 3D transformation. Tools organize into a grid, connect, and reveal the Moki mark during one continuous camera journey: right to center, center to left, left to right, then right to center. Longer scroll travel, damping, and a maximum animation speed keep wheel and touch jumps from skipping immediately to the next pose. Text reveals and the camera reverse with scrolling. Tapping a tab enters its chapter directly. Drawing stops when the pose settles or the section is offscreen. A CSS 3D fallback follows the same poses if WebGL cannot load.
 - Solutions, Our method, Industries, and About each open with an animated 3D film, expressive type, floating details, and scroll parallax. Service rows, industry workflows, method promises, and company values move into place as visitors explore.
 - Oversized type moves in opposite directions with scrolling.
-- The solutions section stays in view while its business scenarios and floating workflow cards change with the scroll. Buttons and arrow keys also select scenarios.
+- On desktop, the solutions section stays in view while its scenarios and workflow cards change with scrolling. Phone layouts use normal document flow, bounded moving cards, and manual scenario tabs so every example remains accessible on short screens.
 - The conversation section brings expressive type, moving orbital details, and an animated Gemini console into view. A shared chat dialog is available throughout the site.
 - Reduced-motion preferences provide compact sections, still visuals, and manual controls.
 - The optional live Three.js scene lets visitors compare scattered and connected systems.
+- Phone layouts reserve separate space for chapter headings, 3D scenes, copy, and tabs. Larger body text and touch targets, stacked inner-page introductions, a compact chat launcher, and landscape layouts keep content and controls accessible.
 
 The selected type direction is **A — Bold + expressive**: Barlow Condensed headlines and Cormorant Garamond italic accents, with DM Sans body text. `/type-study` retains the visual comparison.
 
@@ -55,7 +56,7 @@ npm test
 
 Browser tests start the local server automatically or reuse one already running. Windows tests use installed Chrome when available. Run `npx playwright install ffmpeg` once to enable the recorded scrolling preview. On other systems, run `npx playwright install chromium ffmpeg` first; `PLAYWRIGHT_CHROME_PATH` can point to another installed Chrome binary.
 
-The suite covers navigation, services, enquiry drafts, responsive layouts, reduced motion, chapter selection in both directions, actual 3D pixel changes, restoration of the same pose on reverse scrolling, chapter camera sweeps and text reveals on desktop/tablet/phone, continuous-scroll performance, CSS fallback motion, all four animated inner pages, the moving solutions/conversation sections, chat history, retry behavior, and modal navigation. Server tests cover raw Node requests and Vercel parsed bodies, use a fake provider, and do not spend Gemini quota. Browser chat tests mock the endpoint. A separate live request was verified locally with the configured Gemini key.
+The suite covers navigation, services, enquiry drafts, responsive layouts, reduced motion, chapter selection in both directions, actual 3D pixel changes, restoration of the same pose on reverse scrolling, directional camera travel, large scroll jumps, continuous-scroll performance, CSS fallback motion, all four animated inner pages, the moving solutions/conversation sections, chat history, retry behavior, and modal navigation. Phone checks include text/scene/control separation, tap targets, persistent manual solution selection, inner pages, forms, chat, and landscape. Server tests use a fake provider; browser chat tests mock the endpoint. Neither spends Gemini quota. A separate live request was verified locally with the configured Gemini key.
 
 Generated screenshots and reports stay local in ignored `artifacts/` and `playwright-report/` folders.
 

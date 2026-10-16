@@ -10,7 +10,8 @@ export function useHeroScroll(root: RefObject<HTMLElement | null>) {
     const element = root.current;
     if (!element) return;
     const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
+      if (!context.conditions?.motion) return;
       const q = gsap.utils.selector(element);
       const timeline = gsap.timeline({
         defaults: { ease: 'none' },
@@ -44,7 +45,9 @@ export function MotionPage({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
+      if (!context.conditions?.motion) return;
+      const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(root);
       const band = q('.kinetic-section')[0];
       gsap.fromTo(q('.kinetic-line-one'), { xPercent: -18 }, {
@@ -54,11 +57,11 @@ export function MotionPage({ children }: { children: ReactNode }) {
         xPercent: -15, ease: 'none', scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: .6 },
       });
       q('.industry-index-item').forEach((el, i) => {
-        gsap.fromTo(el, { x: i % 2 === 0 ? -70 : 70, y: 70 }, {
+        gsap.fromTo(el, { x: (i % 2 === 0 ? -70 : 70) * (small ? .3 : 1), y: small ? 25 : 70 }, {
           x: 0, y: 0, ease: 'none', scrollTrigger: { trigger: el.parentElement, start: 'top 98%', end: 'top 65%', scrub: .6 },
         });
       });
-      gsap.fromTo(q('.closing-layout h2'), { y: 90, scale: .88, transformOrigin: 'left center' }, {
+      gsap.fromTo(q('.closing-layout h2'), { y: small ? 28 : 90, scale: small ? .96 : .88, transformOrigin: 'left center' }, {
         y: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: q('.closing-cta')[0], start: 'top bottom', end: 'top 30%', scrub: .5 },
       });
     }, root);

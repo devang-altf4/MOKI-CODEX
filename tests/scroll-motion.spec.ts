@@ -62,7 +62,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
     const tabs = section.getByRole('tablist');
     const before = await section.locator('.solution-node').first().evaluate(el => getComputedStyle(el).transform);
     for (const [index, label] of ['Too much busywork', 'Leads slipping away', 'Data everywhere', 'An invisible website'].entries()) {
-      await section.evaluate((el, i) => scrollTo({ top: el.getBoundingClientRect().top + scrollY + (el.clientHeight - innerHeight) * ((i + .4) / 4), behavior: 'instant' }), index);
+      if (viewport.width <= 700) await tabs.getByRole('tab', { name: new RegExp(label) }).click();
+      else await section.evaluate((el, i) => scrollTo({ top: el.getBoundingClientRect().top + scrollY + (el.clientHeight - innerHeight) * ((i + .4) / 4), behavior: 'instant' }), index);
       await expect(tabs.getByRole('tab', { name: new RegExp(label) })).toHaveAttribute('aria-selected', 'true');
     }
     await expect.poll(() => section.locator('.solution-node').first().evaluate(el => getComputedStyle(el).transform)).not.toBe(before);

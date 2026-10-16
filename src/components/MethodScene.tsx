@@ -136,7 +136,7 @@ export default function MethodScene({ onRenderer }: { onRenderer: (renderer: Met
       narrow = width <= 700;
       renderer.setSize(width, height); camera.aspect = width / height; camera.position.set(0, 0, narrow ? 12 : 14); camera.updateProjectionMatrix();
       const viewHeight = 2 * Math.tan(THREE.MathUtils.degToRad(17.5)) * camera.position.z;
-      system.position.set(narrow ? 0 : viewHeight * camera.aspect * .17, narrow ? -.12 : .05, 0); system.scale.setScalar(narrow ? .88 : 1.18);
+      system.position.set(narrow ? 0 : viewHeight * camera.aspect * .17, narrow ? -.12 : .05, 0); system.scale.setScalar(narrow ? Math.min(.88, viewHeight * camera.aspect / 7.6) : 1.18);
       draw(lastProgress);
     };
     const contextLost = (event: Event) => { event.preventDefault(); lost = true; onRenderer(null); };

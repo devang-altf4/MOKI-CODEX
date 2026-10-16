@@ -74,11 +74,13 @@ export function ConversationSection() {
     const observer = new IntersectionObserver(([entry]) => setInlineVisible(entry.isIntersecting), { threshold: .2 });
     if (root.current) observer.observe(root.current);
     const mm = gsap.matchMedia();
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
+      if (!context.conditions?.motion) return;
+      const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(root);
       const timeline = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: root.current, start: 'top 90%', end: 'top 12%', scrub: .65 } });
-      timeline.fromTo(q('.conversation-copy h2 > span'), { x: -100, y: 80, rotate: -5 }, { x: 0, y: 0, rotate: 0, stagger: .15, duration: 1 }, 0)
-        .fromTo(q('.conversation-console'), { y: 160, rotateY: -18, rotateX: 12, scale: .84, transformPerspective: 1400 }, { y: 0, rotateY: 0, rotateX: 0, scale: 1, duration: 1.2 }, 0)
+      timeline.fromTo(q('.conversation-copy h2 > span'), { x: small ? -20 : -100, y: small ? 25 : 80, rotate: small ? -2 : -5 }, { x: 0, y: 0, rotate: 0, stagger: .15, duration: 1 }, 0)
+        .fromTo(q('.conversation-console'), { y: small ? 40 : 160, rotateY: small ? -4 : -18, rotateX: small ? 3 : 12, scale: small ? .97 : .84, transformPerspective: 1400 }, { y: 0, rotateY: 0, rotateX: 0, scale: 1, duration: 1.2 }, 0)
         .fromTo(q('.conversation-orbit'), { rotation: -65, scale: .5 }, { rotation: 35, scale: 1, duration: 1.2 }, 0);
       gsap.to(q('.conversation-watermark'), { xPercent: -20, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: .7 } });
     }, root);

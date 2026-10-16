@@ -40,11 +40,12 @@ function Navigation() {
   const location = useLocation();
   const menuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { setOpen(false); }, [location.pathname, location.hash]);
+  useEffect(() => { if (!open) return; const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = previous; }; }, [open]);
   useEffect(() => { const update = () => setScrolled(window.scrollY > 20); update(); window.addEventListener('scroll', update, { passive: true }); return () => window.removeEventListener('scroll', update); }, []);
   useEffect(() => { if (!open) return; const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); menuButton.current?.focus(); } }; document.addEventListener('keydown', key); return () => document.removeEventListener('keydown', key); }, [open]);
   return <header className={`site-header ${scrolled ? 'header-scrolled' : ''} ${open ? 'menu-open' : ''}`}>
     <div className="nav-inner container">
-      <Link to="/" aria-label="Moki Systems home" className="home-link"><Logo /></Link>
+      <Link to="/" aria-label="Moki Systems home" className="home-link" onClick={() => { if (location.pathname === '/' && !location.hash) window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'}); }}><Logo /></Link>
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(([to, name]) => <NavLink to={to} key={to}>{name}</NavLink>)}</nav>
       <div className="nav-actions"><Link className="nav-cta" to="/contact"><span>Let’s talk</span><ArrowUpRight size={16} /></Link><button ref={menuButton} className="menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></div>
     </div>

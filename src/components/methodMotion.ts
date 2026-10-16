@@ -6,22 +6,25 @@ export const connections = [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 
 export function easeBetween(from: number, to: number, p: number) { const t = Math.min(1, Math.max(0, (p - from) / (to - from))); return t * t * (3 - 2 * t); }
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
-/** Three reversible camera beats, with a clear reading pause between them. */
+/** One continuous journey. Each chapter starts where the previous one finished. */
 export function chapterMotion(p: number) {
-  const chapter = Math.min(3, Math.floor(p * 4)), start = chapter / 4, end = (chapter + 1) / 4;
-  const entering = chapter ? easeBetween(start, start + .065, p) : 1;
-  const leaving = chapter < 3 ? easeBetween(end - .065, end, p) : 0;
-  const bodyEntering = chapter ? easeBetween(start + .012, start + .065, p) : 1;
-  const bodyLeaving = chapter < 3 ? easeBetween(end - .065, end - .008, p) : 0;
-  const boundary = Math.round(p * 4) / 4;
-  const distance = Math.abs(p - boundary);
-  const sweep = boundary > 0 && boundary < 1 && distance < .065 ? .5 + .5 * Math.cos(Math.PI * distance / .065) : 0;
+  const chapter = Math.min(3, Math.floor(p * 4)), local = Math.min(1, p * 4 - chapter);
+  const travel = easeBetween(.08, .88, local);
+  const positions = [.73, .5, .27, .73, .5];
+  const rolls = [-5, 0, 6, -5, 0], yaws = [-14, 6, 20, -12, 0], scales = [.9, 1.04, .86, .92, 1.1];
+  const entryStart = chapter === 2 ? .26 : .02, entryEnd = chapter === 2 ? .48 : .22;
+  const entering = chapter ? easeBetween(entryStart, entryEnd, local) : 1;
+  const leaving = chapter < 3 ? easeBetween(.84, 1, local) : 0;
+  const bodyEntering = chapter ? easeBetween(entryStart + .025, entryEnd + .025, local) : 1;
+  const direction = chapter === 1 ? 1 : -1;
   return {
-    sweep, roll: (boundary === .5 ? 7 : -8) * sweep,
-    yaw: (boundary === .5 ? -6 : 7) * sweep,
-    opacity: entering * (1 - leaving), bodyOpacity: bodyEntering * (1 - bodyLeaving),
-    x: (1 - entering) * 45 - leaving * 85,
-    y: (1 - entering) * 75 - leaving * 55,
+    pan: mix(positions[chapter], positions[chapter + 1], travel),
+    roll: mix(rolls[chapter], rolls[chapter + 1], travel),
+    yaw: mix(yaws[chapter], yaws[chapter + 1], travel),
+    scale: mix(scales[chapter], scales[chapter + 1], travel),
+    opacity: entering * (1 - leaving), bodyOpacity: bodyEntering * (1 - leaving),
+    x: direction * ((1 - entering) * 50 - leaving * 45),
+    y: (1 - entering) * 30 - leaving * 25,
     tilt: (1 - entering) * -15 + leaving * 10,
   };
 }
