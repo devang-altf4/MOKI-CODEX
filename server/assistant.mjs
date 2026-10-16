@@ -33,13 +33,20 @@ export function createAssistantHandler({ getConfig, fetchImpl = fetch, now = Dat
     let messages;
     try {
       if (Number(req.headers['content-length']) > 16000) { req.resume(); return send(413, { error: 'This conversation is too long. Please start a new chat.' }); }
-      let size = 0; const chunks = [];
-      for await (const chunk of req.iterator({ destroyOnReturn: false })) {
-        size += chunk.length;
-        if (size > 16000) { send(413, { error: 'This conversation is too long. Please start a new chat.' }); req.resume(); return; }
-        chunks.push(chunk);
+      let data = req.body;
+      // Vercel parses JSON first; Vite passes the original Node request stream.
+      if (data === undefined) {
+        let size = 0; const chunks = [];
+        for await (const chunk of req.iterator({ destroyOnReturn: false })) {
+          size += chunk.length;
+          if (size > 16000) { send(413, { error: 'This conversation is too long. Please start a new chat.' }); req.resume(); return; }
+          chunks.push(chunk);
+        }
+        data = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      } else {
+        if (Buffer.byteLength(typeof data === 'string' ? data : JSON.stringify(data)) > 16000) return send(413, { error: 'This conversation is too long. Please start a new chat.' });
+        if (typeof data === 'string') data = JSON.parse(data);
       }
-      const data = JSON.parse(Buffer.concat(chunks).toString('utf8'));
       messages = data.messages;
       if (!Array.isArray(messages) || !messages.length || messages.length > 11 || messages.at(-1).role !== 'user' || messages[0].role !== 'user') throw Error('invalid');
       let total = 0;

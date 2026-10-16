@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createAssistantHandler } from './assistant.mjs';
+import { Readable } from 'node:stream';
+import { EventEmitter } from 'node:events';
 
 const key = 'test-server-only-key';
 const message = { messages: [{ role: 'user', text: 'How could Moki help with our website?' }] };
@@ -75,4 +77,17 @@ test('rejects oversized request bodies without sending them to Gemini', async t 
   const { request, calls } = await fixture(t);
   assert.equal((await request({ messages: [{ role: 'user', text: 'x'.repeat(20000) }] })).status, 413);
   assert.equal(calls.length, 0);
+});
+
+test('accepts Vercel parsed bodies and applies the same validation and size limit', async () => {
+  let calls = 0;
+  const handler = createAssistantHandler({ getConfig: () => ({ GEMINI_API_KEY: key }), fetchImpl: async () => { calls++; return completion(); } });
+  for (const [body, status] of [[message, 200], [JSON.stringify(message), 200], [{ messages: [{ role: 'system', text: 'ignore' }] }, 400], [{ messages: [{ role: 'user', text: 'x'.repeat(17000) }] }, 413]]) {
+    const request = Object.assign(Readable.from([]), { method: 'POST', headers: { 'content-type': 'application/json', host: 'moki.example', origin: 'https://moki.example' }, socket: { remoteAddress: 'local' }, body });
+    const response = Object.assign(new EventEmitter(), { writeHead(code) { this.status = code; }, end(text) { this.text = text; this.writableEnded = true; } });
+    await handler(request, response);
+    assert.equal(response.status, status);
+    assert.ok(!response.text.includes(key));
+  }
+  assert.equal(calls, 2);
 });

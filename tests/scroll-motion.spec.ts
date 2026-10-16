@@ -21,21 +21,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
     await page.screenshot({ path: `artifacts/scroll-hero-${viewport.width}.png` });
 
     const method = page.locator('.scroll-method');
-    const canvas = method.locator('canvas');
+    const film = method.locator('.method-film');
     await method.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY, behavior: 'instant' }));
     await expect(method.getByRole('button', { name: 'Map', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await expect.poll(() => canvas.evaluate((el: HTMLCanvasElement) => {
-      const pixels = el.getContext('2d')!.getImageData(0, 0, el.width, el.height).data;
-      return pixels.some((value, index) => index % 4 !== 3 && value > 100);
-    })).toBeTruthy();
-    const firstFrame = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL('image/webp', .1));
+    await expect.poll(() => film.locator('video').nth(0).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
     await method.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + (el.clientHeight - innerHeight) * .97, behavior: 'instant' }));
     await expect(method.getByRole('button', { name: 'Integrate', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(method.locator('.method-scene-title h2 > span')).toHaveCSS('opacity', '1');
-    await expect.poll(() => canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL('image/webp', .1))).not.toBe(firstFrame);
+    await expect.poll(() => film.locator('video').nth(3).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
     await expect(method.locator('.method-scene-copy')).toHaveCSS('opacity', '1');
-    await expect.poll(() => method.getAttribute('data-painted-frame').then(Number)).toBeGreaterThan(viewport.width <= 700 ? 110 : 175);
-    expect(Number(await method.getAttribute('data-cached-frames'))).toBeLessThanOrEqual(viewport.width <= 700 ? 14 : 20);
+    await expect(film.locator('video').nth(0)).toHaveJSProperty('paused', true);
     await page.screenshot({ path: `artifacts/scroll-method-${viewport.width}.png` });
 
     // Both directions follow the scroll; revisiting the start restores the first chapter.
@@ -58,37 +53,46 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
   });
 }
 
-test('the method keeps drawing during a continuous scroll without retaining the whole film', async ({ page }) => {
-  await page.setViewportSize({ width: 1828, height: 938 });
+test('native chapters preserve 24 fps, keep playing between scrolls, and support pause/replay', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('.scroll-method');
   await section.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY, behavior: 'instant' }));
-  await expect(section).toHaveAttribute('data-sequence-ready', 'true');
-  await expect.poll(() => section.getAttribute('data-painted-frame')).not.toBeNull();
-  const metrics = await section.evaluate(el => new Promise<{ uniqueFrames: number; maxStaleMs: number; maxCached: number; p95FrameMs: number; holds: unknown[] }>(resolve => {
-    const root = el as HTMLElement;
-    const start = performance.now(), top = root.getBoundingClientRect().top + scrollY, travel = root.offsetHeight - innerHeight;
-    const unique = new Set<string>(); const intervals: number[] = [];
-    const holds: unknown[] = [];
-    let previousTime = start, lastChange = start, lastFrame = '', maxStaleMs = 0, maxCached = 0;
-    const step = (now: number) => {
-      const p = Math.min(1, (now - start) / 3000);
-      scrollTo({ top: top + travel * (.03 + p * .9), behavior: 'instant' });
-      const frame = root.dataset.paintedFrame || '';
-      maxStaleMs = Math.max(maxStaleMs, now - lastChange);
-      if (frame !== lastFrame) { if (now - lastChange > 100) holds.push({ from: lastFrame, to: frame, afterMs: Math.round(now - start), holdMs: Math.round(now - lastChange), requested: root.dataset.frame }); lastFrame = frame; lastChange = now; unique.add(frame); }
-      maxCached = Math.max(maxCached, Number(root.dataset.cachedFrames || 0));
-      intervals.push(now - previousTime); previousTime = now;
-      if (p < 1) requestAnimationFrame(step);
-      else { if (now - lastChange > 100) holds.push({ finalFrame: lastFrame, requested: root.dataset.frame, holdMs: Math.round(now - lastChange) }); intervals.sort((a, b) => a - b); resolve({ uniqueFrames: unique.size, maxStaleMs, maxCached, p95FrameMs: intervals[Math.floor(intervals.length * .95)], holds }); }
-    };
-    requestAnimationFrame(step);
+  const video = section.locator('video').first();
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
+  const metrics = await video.evaluate((v: HTMLVideoElement) => new Promise<{fps: number; dropped: number; seeks: number; elapsed: number}>(resolve => {
+    const start = performance.now(), time = v.currentTime, quality = v.getVideoPlaybackQuality();
+    let frames = 0, seeks = 0;
+    const seek = () => { seeks++; }; v.addEventListener('seeking', seek);
+    const draw = (now: number) => {
+      frames++;
+      if (now - start < 2100) v.requestVideoFrameCallback(draw);
+      else { const end = v.getVideoPlaybackQuality(); v.removeEventListener('seeking', seek); resolve({ fps: frames / ((now-start)/1000), dropped: end.droppedVideoFrames-quality.droppedVideoFrames, seeks, elapsed: v.currentTime-time }); }
+    }; v.requestVideoFrameCallback(draw);
   }));
-  await test.info().attach('scroll-performance.json', { body: JSON.stringify(metrics, null, 2), contentType: 'application/json' });
-  console.log('Continuous method scroll:', JSON.stringify(metrics));
-  expect(metrics.uniqueFrames).toBeGreaterThan(40);
-  expect(metrics.maxStaleMs).toBeLessThan(250);
-  expect(metrics.maxCached).toBeLessThanOrEqual(20);
+  await test.info().attach('native-playback.json', { body: JSON.stringify(metrics, null, 2), contentType: 'application/json' });
+  expect(metrics.fps).toBeGreaterThan(20);
+  expect(metrics.dropped).toBeLessThan(5);
+  expect(metrics.seeks).toBe(0);
+  expect(metrics.elapsed).toBeGreaterThan(2);
+  // A wheel movement within the same chapter must not scrub or restart its clock.
+  const before = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
+  await page.mouse.wheel(0, 170);
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(before);
+  await section.getByRole('button', {name:'Pause method animation', exact:true}).click();
+  await expect(video).toHaveJSProperty('paused', true);
+  const paused = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
+  await page.waitForTimeout(250);
+  expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBe(paused);
+  await section.getByRole('button', {name:'Resume method animation', exact:true}).click();
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(paused);
+  await section.getByRole('button', {name:'Replay method animation', exact:true}).click();
+  expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeLessThan(1);
+  await section.getByRole('button', {name:'Kit', exact:true}).click();
+  await expect.poll(() => section.locator('video').nth(2).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
+  await expect(video).toHaveJSProperty('paused', true);
+  await section.locator('video').nth(2).evaluate((v: HTMLVideoElement) => { v.currentTime = v.duration - .15; });
+  await expect(section.locator('.method-film')).toHaveAttribute('data-playback-state', 'ended');
+  await expect(section.getByRole('button', {name:'Replay method animation', exact:true})).toBeVisible();
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 }, { width: 390, height: 844 }]) {

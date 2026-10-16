@@ -38,10 +38,6 @@
 /* Four chapters play across the whole viewport, directly after the opening. */
 .scroll-method { height: 430svh; background: #080a0f; --story-pan: -45px; --story-scale: 1.06; }
 .method-scene { position: sticky; top: 0; height: 100svh; min-height: 620px; overflow: hidden; background: #080a0f; isolation: isolate; }
-.method-canvas { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; mix-blend-mode: lighten; transform: translateX(var(--story-pan)) scale(var(--story-scale)); }
-.method-poster { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: lighten; pointer-events: none; transition: opacity .2s; }
-.method-poster > img { width: 100%; height: 100%; object-fit: cover; }
-.scroll-method[data-painted-frame] .method-poster { opacity: 0; }
 .method-vignette { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, #080a0f 0%, #080a0fce 13%, transparent 38%), linear-gradient(90deg, #080a0f80, transparent 48%); pointer-events: none; }
 .method-grain { position: absolute; inset: 0; background-image: linear-gradient(#d4e0ff06 1px, transparent 1px), linear-gradient(90deg, #d4e0ff06 1px, transparent 1px); background-size: 100px 100px; opacity: .5; }
 .method-scene-top { position: absolute; left: 50%; top: 119px; transform: translateX(-50%); display: flex; justify-content: space-between; align-items: center; z-index: 3; }
@@ -160,8 +156,6 @@
   .hero-halo { width: 150vw; height: 150vw; left: -25%; top: 20%; }
   .scroll-method { height: 360svh; }
   .method-scene { min-height: 620px; }
-  .method-canvas { inset: 15% 0 auto; height: 70%; transform: translateX(calc(var(--story-pan) * .25)) scale(var(--story-scale)); }
-  .method-poster { inset: 15% 0 auto; height: 70%; }
   .method-vignette { background: linear-gradient(0deg, #080a0f 8%, #080a0fe8 24%, transparent 43%), linear-gradient(180deg, #080a0f 5%, transparent 35%); }
   .method-scene-top { top: 100px; }
   .method-scene-title { top: 20%; }
@@ -216,7 +210,7 @@
   .hero-next, .hero-orbit-word, .hero-scroll-progress { display: none; }
   .scroll-method.framework-reduced { height: auto; }
   .framework-reduced .method-scene { position: relative; height: 100svh; }
-  .method-canvas, .method-big-number { transform: none; }
+  .method-big-number { transform: none; }
   .method-scroll-cue { display: none; }
   .kinetic-line { font-size: 12vw; transform: none; }
   .kinetic-line-two { margin-left: 0; }
