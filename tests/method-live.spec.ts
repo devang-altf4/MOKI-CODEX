@@ -1,5 +1,54 @@
 import { expect, test } from '@playwright/test';
 
+for (const width of [1440, 634, 390]) {
+  test(`all three chapter changes sweep the camera and reveal the next text at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({width,height:900});
+    await page.goto('/');
+    const section = page.locator('#method'), stage = section.locator('.method-live-stage'), heading = section.locator('.method-scene-title h2');
+    const go = async (p:number) => {
+      const actual = await section.evaluate((el,progress) => {
+        scrollTo({top:el.getBoundingClientRect().top+scrollY+(el.clientHeight-innerHeight)*progress,behavior:'instant'});
+        return Math.min(1,Math.max(0,-el.getBoundingClientRect().top/(el.clientHeight-innerHeight)));
+      },p);
+      await expect.poll(async () => Math.abs(Number(await section.getAttribute('data-motion-progress'))-actual),{intervals:[100]}).toBeLessThan(.0001);
+    };
+    for (const [index,boundary] of [.25,.5,.75].entries()) {
+      await go(boundary-.08);
+      await expect(heading).toHaveCSS('opacity','1');
+      const resting = await stage.boundingBox();
+      await go(boundary);
+      await expect.poll(() => section.getAttribute('data-camera-sweep').then(Number)).toBeGreaterThan(.99);
+      await expect.poll(() => heading.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.02);
+      expect((await stage.boundingBox())!.width).toBeGreaterThan(resting!.width*1.1);
+      await page.screenshot({path:`artifacts/method-sweep-${width}-${index}.png`});
+      await go(boundary+.075);
+      await expect(heading).toHaveCSS('opacity','1');
+      await expect(section.locator('.method-scene-copy')).toHaveCSS('opacity','1');
+      await expect(section.locator('.method-tabs button').nth(index+1)).toHaveAttribute('aria-pressed','true');
+      // Reverse through the same camera beat without replaying a timed entrance.
+      await go(boundary);
+      await expect.poll(() => heading.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.02);
+      await go(boundary-.08);
+      await expect(heading).toHaveCSS('opacity','1');
+      await expect(section.locator('.method-tabs button').nth(index)).toHaveAttribute('aria-pressed','true');
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
+  });
+}
+
+test('manual reduced-motion chapters remain readable without a camera sweep', async ({ page }) => {
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/');
+  const section=page.locator('#method');
+  for (const name of ['Map','Optimize','Kit','Integrate']) {
+    await section.getByRole('button',{name,exact:true}).click();
+    await expect(section.locator('.method-live-stage')).toHaveCSS('transform','none');
+    await expect(section.locator('.method-scene-title h2')).toHaveCSS('opacity','1');
+    await expect(section.locator('.method-scene-copy')).toHaveCSS('opacity','1');
+  }
+});
+
 test('the tools visibly move within a chapter, reverse exactly, and have no playback timer', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('#method'), scene = section.locator('.method-live-stage');

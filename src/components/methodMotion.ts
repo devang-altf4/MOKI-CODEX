@@ -6,6 +6,26 @@ export const connections = [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 
 export function easeBetween(from: number, to: number, p: number) { const t = Math.min(1, Math.max(0, (p - from) / (to - from))); return t * t * (3 - 2 * t); }
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
+/** Three reversible camera beats, with a clear reading pause between them. */
+export function chapterMotion(p: number) {
+  const chapter = Math.min(3, Math.floor(p * 4)), start = chapter / 4, end = (chapter + 1) / 4;
+  const entering = chapter ? easeBetween(start, start + .065, p) : 1;
+  const leaving = chapter < 3 ? easeBetween(end - .065, end, p) : 0;
+  const bodyEntering = chapter ? easeBetween(start + .012, start + .065, p) : 1;
+  const bodyLeaving = chapter < 3 ? easeBetween(end - .065, end - .008, p) : 0;
+  const boundary = Math.round(p * 4) / 4;
+  const distance = Math.abs(p - boundary);
+  const sweep = boundary > 0 && boundary < 1 && distance < .065 ? .5 + .5 * Math.cos(Math.PI * distance / .065) : 0;
+  return {
+    sweep, roll: (boundary === .5 ? 7 : -8) * sweep,
+    yaw: (boundary === .5 ? -6 : 7) * sweep,
+    opacity: entering * (1 - leaving), bodyOpacity: bodyEntering * (1 - bodyLeaving),
+    x: (1 - entering) * 45 - leaving * 85,
+    y: (1 - entering) * 75 - leaving * 55,
+    tilt: (1 - entering) * -15 + leaving * 10,
+  };
+}
+
 /** Every pose is a pure function of scroll position, including the reverse journey. */
 export function toolPose(p: number, index: number) {
   const tidy = easeBetween(0, .48, p), integrated = easeBetween(.72, 1, p);

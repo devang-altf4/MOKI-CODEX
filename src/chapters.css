@@ -1,6 +1,9 @@
 /* Continuous scroll poses, rendered in 3D without a video clock. */
 .scroll-method { height: 580svh; }
 .method-live-stage { position: absolute; inset: 0; overflow: hidden; --tool-size: 120px; }
+.method-live-stage { will-change: transform; backface-visibility: hidden; }
+.scroll-method .method-scene-title h2 > span, .scroll-method .method-scene-title em, .scroll-method .method-scene-copy { animation: none; }
+.scroll-method .method-scene-title h2, .scroll-method .method-scene-copy { will-change: transform, opacity; }
 .method-webgl, .method-fallback { position: absolute; inset: 0; }
 .method-webgl { opacity: 0; transition: opacity .25s; }
 .method-webgl canvas { width: 100%; height: 100%; display: block; }
@@ -23,6 +26,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-method.framework-reduced { height: auto; }
+  .framework-reduced .method-live-stage, .framework-reduced .method-scene-title h2, .framework-reduced .method-scene-copy { will-change: auto; transform: none !important; }
 }
 @media (max-width: 500px) {
   .method-live-stage { top: 25%; height: 43%; }
