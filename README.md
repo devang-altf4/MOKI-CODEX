@@ -24,7 +24,7 @@ The `/api/chat` handler runs on the server in both the development server and `n
 ## Experience
 
 - Scroll holds the opening scene in place, enlarges and rotates it, and reveals “One connected business.”
-- Four full-screen MOKI chapters turn scattered tasks into a connected system. Scrolling selects a chapter, then its full 24 fps video plays naturally for ten seconds. The last frame holds until the next chapter. Pause, resume, and replay controls let visitors take their time. Scrolling never seeks the video clock; offscreen and hidden scenes pause.
+- The full-screen MOKI method is a live 3D transformation. Scrolling moves physical business tools from scattered positions into an organized grid, builds their blue connections, and reveals the Moki mark. Reversing the scroll reverses the same poses. Gentle damping smooths wheel and touch input; drawing stops when the pose settles or the section is offscreen. There is no video timer or playback control in this section. A CSS 3D fallback follows the same scroll positions if WebGL cannot load.
 - Solutions, Our method, Industries, and About each open with an animated 3D film, expressive type, floating details, and scroll parallax. Service rows, industry workflows, method promises, and company values move into place as visitors explore.
 - Oversized type moves in opposite directions with scrolling.
 - The solutions section stays in view while its business scenarios and floating workflow cards change with the scroll. Buttons and arrow keys also select scenarios.
@@ -40,9 +40,9 @@ The selected type direction is **A — Bold + expressive**: Barlow Condensed hea
 - Company content and nine services: `src/content.ts`.
 - Assistant UI and shared conversation: `src/components/Assistant.tsx`.
 - Gemini endpoint, company grounding, validation, request limits, and timeouts: `server/assistant.mjs`.
-- Scroll scenes: `src/components/ScrollMotion.tsx`, `Framework.tsx`, `MethodFilm.tsx`, `CinematicPages.tsx`, and `SolutionExplorer.tsx`.
+- Scroll scenes: `src/components/ScrollMotion.tsx`, `Framework.tsx`, `MethodScene.tsx`, `MethodStage.tsx`, `methodMotion.ts`, `CinematicPages.tsx`, and `SolutionExplorer.tsx`.
 - Original supplied hero media: `assets-src/hero/`. Optimized public copies: `public/images/` and `public/videos/`.
-- Original method footage: `assets-src/method/`. Full-rate, optimized desktop/mobile videos: `public/videos/method/`; still fallbacks: `public/images/method/`. Run `npm run prepare:chapters` with FFmpeg installed to regenerate these assets. The old sampled frames in `public/film/` are retained as reference; the website no longer downloads or renders them.
+- Footage used on the inner-page introductions: `assets-src/method/`. Full-rate, optimized desktop/mobile videos: `public/videos/method/`; still fallbacks: `public/images/method/`. Run `npm run prepare:chapters` with FFmpeg installed to regenerate these assets. The old sampled frames in `public/film/` are retained as reference; the website no longer downloads or renders them.
 - Reference business brief: `docs/client-brief.txt`. Client screenshot updates add website development, SEO, and the public contact email.
 
 ## Verify
@@ -53,9 +53,9 @@ npm run test:server
 npm test
 ```
 
-Browser tests start the local server automatically or reuse one already running. Windows tests use installed Chrome when available. On other systems, run `npx playwright install chromium` first; `PLAYWRIGHT_CHROME_PATH` can point to another installed Chrome binary.
+Browser tests start the local server automatically or reuse one already running. Windows tests use installed Chrome when available. Run `npx playwright install ffmpeg` once to enable the recorded scrolling preview. On other systems, run `npx playwright install chromium ffmpeg` first; `PLAYWRIGHT_CHROME_PATH` can point to another installed Chrome binary.
 
-The suite covers navigation, services, enquiry drafts, responsive layouts, reduced motion, chapter selection in both directions, actual video frame cadence, playback controls, all four animated inner pages, the moving solutions/conversation sections, chat history, retry behavior, and modal navigation. Server tests cover raw Node requests and Vercel parsed bodies, use a fake provider, and do not spend Gemini quota. Browser chat tests mock the endpoint. A separate live request was verified locally with the configured Gemini key.
+The suite covers navigation, services, enquiry drafts, responsive layouts, reduced motion, chapter selection in both directions, actual 3D pixel changes, restoration of the same pose on reverse scrolling, continuous-scroll performance, CSS fallback motion, all four animated inner pages, the moving solutions/conversation sections, chat history, retry behavior, and modal navigation. Server tests cover raw Node requests and Vercel parsed bodies, use a fake provider, and do not spend Gemini quota. Browser chat tests mock the endpoint. A separate live request was verified locally with the configured Gemini key.
 
 Generated screenshots and reports stay local in ignored `artifacts/` and `playwright-report/` folders.
 

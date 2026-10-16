@@ -16,7 +16,7 @@ for (const width of [1440, 390]) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), path).toBeTruthy();
       if (path === '/how-it-works') {
         await page.locator('#method').evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + 100, behavior: 'instant' }));
-        await expect.poll(() => page.locator('.method-film video').first().evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
+        await expect(page.locator('.method-live-stage canvas')).toBeVisible({ timeout:20000 });
       } else {
         const block = page.locator('.motion-block').first();
         await block.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY - innerHeight * .9, behavior: 'instant' }));
@@ -37,7 +37,7 @@ test('inner pages and their filtered rows respect reduced motion', async ({ page
     await expect(page.locator('.inner-visual video')).toBeHidden();
     await expect(page.locator('.motion-block').first()).toHaveCSS('transform', 'none');
     if (path === '/how-it-works') {
-      await expect(page.locator('.method-film video')).toHaveCount(0);
+      await expect(page.locator('.method-live-stage canvas')).toHaveCount(0);
       await page.locator('#method').getByRole('button', { name: 'Integrate', exact: true }).click();
       await expect(page.locator('.method-scene-title')).toContainText('FIND');
     }

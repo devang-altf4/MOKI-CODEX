@@ -21,16 +21,17 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
     await page.screenshot({ path: `artifacts/scroll-hero-${viewport.width}.png` });
 
     const method = page.locator('.scroll-method');
-    const film = method.locator('.method-film');
+    const scene = method.locator('.method-live-stage');
     await method.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY, behavior: 'instant' }));
     await expect(method.getByRole('button', { name: 'Map', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await expect.poll(() => film.locator('video').nth(0).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
+    await expect(scene).toHaveAttribute('data-renderer', 'webgl', {timeout:20000});
+    await expect(scene.locator('canvas')).toBeVisible();
     await method.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + (el.clientHeight - innerHeight) * .97, behavior: 'instant' }));
     await expect(method.getByRole('button', { name: 'Integrate', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(method.locator('.method-scene-title h2 > span')).toHaveCSS('opacity', '1');
-    await expect.poll(() => film.locator('video').nth(3).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
+    await expect.poll(() => method.getAttribute('data-motion-progress').then(Number)).toBeGreaterThan(.96);
     await expect(method.locator('.method-scene-copy')).toHaveCSS('opacity', '1');
-    await expect(film.locator('video').nth(0)).toHaveJSProperty('paused', true);
+    await expect(method.locator('video')).toHaveCount(0);
     await page.screenshot({ path: `artifacts/scroll-method-${viewport.width}.png` });
 
     // Both directions follow the scroll; revisiting the start restores the first chapter.
@@ -52,48 +53,6 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
     expect(errors).toEqual([]);
   });
 }
-
-test('native chapters preserve 24 fps, keep playing between scrolls, and support pause/replay', async ({ page }) => {
-  await page.goto('/');
-  const section = page.locator('.scroll-method');
-  await section.evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY, behavior: 'instant' }));
-  const video = section.locator('video').first();
-  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
-  const metrics = await video.evaluate((v: HTMLVideoElement) => new Promise<{fps: number; dropped: number; seeks: number; elapsed: number}>(resolve => {
-    const start = performance.now(), time = v.currentTime, quality = v.getVideoPlaybackQuality();
-    let frames = 0, seeks = 0;
-    const seek = () => { seeks++; }; v.addEventListener('seeking', seek);
-    const draw = (now: number) => {
-      frames++;
-      if (now - start < 2100) v.requestVideoFrameCallback(draw);
-      else { const end = v.getVideoPlaybackQuality(); v.removeEventListener('seeking', seek); resolve({ fps: frames / ((now-start)/1000), dropped: end.droppedVideoFrames-quality.droppedVideoFrames, seeks, elapsed: v.currentTime-time }); }
-    }; v.requestVideoFrameCallback(draw);
-  }));
-  await test.info().attach('native-playback.json', { body: JSON.stringify(metrics, null, 2), contentType: 'application/json' });
-  expect(metrics.fps).toBeGreaterThan(20);
-  expect(metrics.dropped).toBeLessThan(5);
-  expect(metrics.seeks).toBe(0);
-  expect(metrics.elapsed).toBeGreaterThan(2);
-  // A wheel movement within the same chapter must not scrub or restart its clock.
-  const before = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
-  await page.mouse.wheel(0, 170);
-  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(before);
-  await section.getByRole('button', {name:'Pause method animation', exact:true}).click();
-  await expect(video).toHaveJSProperty('paused', true);
-  const paused = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
-  await page.waitForTimeout(250);
-  expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBe(paused);
-  await section.getByRole('button', {name:'Resume method animation', exact:true}).click();
-  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(paused);
-  await section.getByRole('button', {name:'Replay method animation', exact:true}).click();
-  expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeLessThan(1);
-  await section.getByRole('button', {name:'Kit', exact:true}).click();
-  await expect.poll(() => section.locator('video').nth(2).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(.2);
-  await expect(video).toHaveJSProperty('paused', true);
-  await section.locator('video').nth(2).evaluate((v: HTMLVideoElement) => { v.currentTime = v.duration - .15; });
-  await expect(section.locator('.method-film')).toHaveAttribute('data-playback-state', 'ended');
-  await expect(section.getByRole('button', {name:'Replay method animation', exact:true})).toBeVisible();
-});
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 }, { width: 390, height: 844 }]) {
   test(`solutions and conversation move with scrolling at ${viewport.width}px`, async ({ page }) => {

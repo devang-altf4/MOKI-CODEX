@@ -1,28 +1,34 @@
-/* Full-rate native video replaces the sampled, scroll-seeking frame sequence. */
-.scroll-method { height: 560svh; }
-.method-film { position: absolute; inset: 0; }
-.method-film-poster, .method-native-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.method-film-poster img { width: 100%; height: 100%; object-fit: cover; }
-.method-native-video { opacity: 0; transition: opacity .75s ease; }
-.method-native-video.film-visible { opacity: 1; }
-.method-film-poster, .method-native-video { transform: translateX(var(--story-pan)) scale(1.06); mix-blend-mode: lighten; }
-.method-playback { position: absolute; right: 6%; bottom: 112px; z-index: 5; display: flex; align-items: center; gap: 7px; padding: 6px 8px 6px 15px; border: 1px solid #738cb33b; border-radius: 50px; background: #080d18e6; color: #c0cdea; }
-.method-time { min-width: 58px; font-size: 10px; font-variant-numeric: tabular-nums; }
-.method-playback button { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #6c91ef1c; color: #bcd0ff; border: 1px solid transparent; }
-.method-playback button:hover { background: #6c91ef40; border-color: #729bf0; }
-.method-playback button:focus-visible { outline: 2px solid #abc1ff; outline-offset: 3px; }
-.method-scroll-cue { margin-bottom: 48px; }
+/* Continuous scroll poses, rendered in 3D without a video clock. */
+.scroll-method { height: 580svh; }
+.method-live-stage { position: absolute; inset: 0; overflow: hidden; --tool-size: 120px; }
+.method-webgl, .method-fallback { position: absolute; inset: 0; }
+.method-webgl { opacity: 0; transition: opacity .25s; }
+.method-webgl canvas { width: 100%; height: 100%; display: block; }
+.webgl-ready .method-webgl { opacity: 1; }
+.webgl-ready .method-fallback { visibility: hidden; }
+.method-fallback { perspective: 1000px; transform-style: preserve-3d; }
+.method-fallback-tool { position: absolute; left: 50%; top: 50%; width: var(--tool-size); height: var(--tool-size); margin: calc(var(--tool-size) * -.5); display: grid; place-items: center; color: #a4adb9; background: linear-gradient(135deg, #747b86, #3f454e 48%, #282e37); border: 1px solid #9da5b1; border-radius: 17%; box-shadow: inset 2px 2px 3px #d2d9e267, inset -4px -5px 5px #060a1180, 12px 18px 18px #0006; transform-style: preserve-3d; }
+.method-fallback-tool svg { width: 65%; height: 65%; filter: drop-shadow(1px 3px 1px #0b111dcc); transform: translateZ(12px); }
+.method-fallback-link { position: absolute; top: 50%; left: 50%; height: 2px; background: #5986ff; box-shadow: 0 0 9px #306cfc; transform-origin: left; }
+.method-fallback-mark { position: absolute; width: calc(var(--tool-size) * 2.4); height: calc(var(--tool-size) * 2); margin-left: calc(var(--tool-size) * -1.2); margin-top: calc(var(--tool-size) * -1); left: 50%; top: 50%; transform: scale(0); color: #397aff; }
+.method-fallback-mark .brand, .method-fallback-mark .brand-mark { width: 100%; height: 100%; }
+.method-fallback-mark svg { filter: drop-shadow(8px 10px 1px #143174) drop-shadow(0 0 20px #326fff44); }
+.chapter-track i { transform: scaleX(0); }
+.method-scroll-cue { margin-bottom: 0; }
 @media (max-width: 700px) {
-  .scroll-method { height: 540svh; }
-  .method-film-poster, .method-native-video { top: 15%; height: 66%; transform: translateX(calc(var(--story-pan) * .2)) scale(1.02); }
-  .method-playback { left: 6%; right: auto; bottom: 28px; padding: 3px 5px 3px 12px; }
-  .method-playback button { width: 32px; height: 32px; }
+  .scroll-method { height: 560svh; }
+  .method-live-stage { inset: 22% 0 auto; height: 49%; }
   .method-chapter-nav, .home-experience .method-chapter-nav { bottom: 85px; }
   .method-scene-bottom { bottom: 175px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-method.framework-reduced { height: auto; }
-  .method-film-poster { transform: none; }
+}
+@media (max-width: 500px) {
+  .method-live-stage { top: 25%; height: 43%; }
+}
+@media (min-width: 501px) and (max-width: 700px) {
+  .method-live-stage { inset: 15% -25% auto 25%; height: 60%; }
 }
 
 /* Inner routes get their own film, oversized moving type, and dimensional rows. */
