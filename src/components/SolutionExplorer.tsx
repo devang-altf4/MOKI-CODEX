@@ -13,28 +13,32 @@ export default function SolutionExplorer() {
   const root = useRef<HTMLElement>(null);
   const [selected, setSelected] = useState(0);
   const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [compact, setCompact] = useState(() => matchMedia('(max-width: 700px), (max-width: 960px) and (max-height: 500px)').matches);
   const challenge = challenges[selected];
   const selectedRef = useRef(0);
   useEffect(() => {
     const mm = gsap.matchMedia();
-    mm.add({ motion: '(prefers-reduced-motion: no-preference)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', reduced: '(prefers-reduced-motion: reduce)', compact: '(max-width: 700px), (max-width: 960px) and (max-height: 500px)' }, context => {
+      const small = Boolean(context.conditions?.compact);
+      setCompact(small);
       setReduced(Boolean(context.conditions?.reduced));
       if (context.conditions?.reduced) return;
       const q = gsap.utils.selector(root);
       const timeline = gsap.timeline({
         defaults: { ease: 'none' },
-        scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom bottom', scrub: .5,
+        scrollTrigger: { trigger: root.current, start: small ? 'top 85%' : 'top top', end: small ? 'bottom 20%' : 'bottom bottom', scrub: .5,
           onUpdate: self => {
             const index = Math.min(3, Math.floor(self.progress * 4));
-            if (index !== selectedRef.current) { selectedRef.current = index; setSelected(index); }
+            if (!small && index !== selectedRef.current) { selectedRef.current = index; setSelected(index); }
             root.current?.style.setProperty('--solution-progress', String(self.progress));
           },
         },
       });
-      timeline.fromTo(q('.solution-node'), { y: i => [80, -80, 100, -65][i], x: i => [-65, -30, 40, 75][i], rotateZ: i => [-18, 13, -12, 18][i], scale: .78 }, {
-        y: i => [-32, 32, -35, 24][i], x: 0, rotateZ: i => [8, -7, 5, -8][i], scale: 1, duration: .5,
-      }, 0).to(q('.solution-node'), { y: i => [30, -20, 32, -24][i], x: i => [15, -10, 12, -15][i], rotateZ: i => [-7, 6, -6, 7][i], duration: .5 }, .5)
-        .fromTo(q('.solution-constellation'), { rotateY: -20, rotateX: 12 }, { rotateY: 12, rotateX: -5, duration: 1 }, 0)
+      const travel = small ? .15 : 1;
+      timeline.fromTo(q('.solution-node'), { y: i => [80, -80, 100, -65][i] * travel, x: i => [-65, -30, 40, 75][i] * travel, rotateZ: i => [-18, 13, -12, 18][i] * (small ? .4 : 1), scale: small ? .94 : .78 }, {
+        y: i => [-32, 32, -35, 24][i] * travel, x: 0, rotateZ: i => [8, -7, 5, -8][i], scale: 1, duration: .5,
+      }, 0).to(q('.solution-node'), { y: i => [30, -20, 32, -24][i] * travel, x: i => [15, -10, 12, -15][i] * travel, rotateZ: i => [-7, 6, -6, 7][i], duration: .5 }, .5)
+        .fromTo(q('.solution-constellation'), { rotateY: small ? -5 : -20, rotateX: small ? 3 : 12 }, { rotateY: small ? 4 : 12, rotateX: small ? -2 : -5, duration: 1 }, 0)
         .fromTo(q('.solution-giant-index'), { y: 80, x: 40 }, { y: -70, x: -50, duration: 1 }, 0)
         .fromTo(q('.solution-packet'), { offsetDistance: '0%' }, { offsetDistance: '100%', duration: 1 }, 0);
     }, root);
@@ -42,7 +46,7 @@ export default function SolutionExplorer() {
   }, []);
   const select = (index: number) => {
     selectedRef.current = index; setSelected(index);
-    if (!reduced && root.current) {
+    if (!reduced && !compact && root.current) {
       const section = root.current;
       scrollTo({ top: section.getBoundingClientRect().top + scrollY + (section.offsetHeight - innerHeight) * ((index + .5) / 4), behavior: 'smooth' });
     }

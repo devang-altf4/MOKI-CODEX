@@ -20,15 +20,17 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
   useEffect(() => {
     const element = root.current!, film = video.current!;
     const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px), (max-width: 960px) and (max-height: 500px)' }, context => {
+      if (!context.conditions?.motion) return;
+      const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(element);
       gsap.fromTo(q('.inner-title-line'), { yPercent: 110, rotation: 3 }, { yPercent: 0, rotation: 0, stagger: .12, duration: 1.1, ease: 'power4.out' });
       gsap.fromTo(q('.inner-visual-tilt'), { scale: .8, rotationY: -18, rotationZ: -6 }, { scale: 1, rotationY: 0, rotationZ: 0, duration: 1.6, ease: 'power3.out' });
       const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: element, start: 'top top', end: 'bottom top', scrub: .8 } });
-      tl.to(q('.inner-visual'), { y: -130, scale: 1.26, rotation: 7 }, 0)
-        .to(q('.inner-intro-copy'), { y: -90 }, 0)
+      tl.to(q('.inner-visual'), { y: small ? -25 : -130, scale: small ? 1.05 : 1.26, rotation: small ? 3 : 7 }, 0)
+        .to(q('.inner-intro-copy'), { y: small ? -18 : -90 }, 0)
         .to(q('.inner-orbit-word'), { xPercent: -23 }, 0)
-        .to(q('.inner-float'), { y: (i: number) => i % 2 ? -120 : 85, rotation: (i: number) => i % 2 ? -9 : 9, stagger: .03 }, 0)
+        .to(q('.inner-float'), { y: (i: number) => (i % 2 ? -120 : 85) * (small ? .15 : 1), rotation: (i: number) => i % 2 ? -9 : 9, stagger: .03 }, 0)
         .to(q('.inner-scroll-line i'), { scaleY: 1 }, 0);
       let visible = false;
       const update = () => { if (visible && document.visibilityState === 'visible') void film.play().catch(() => {}); else film.pause(); };
@@ -52,11 +54,13 @@ export function MotionBlock({ children, className = '' }: { children: ReactNode;
   useEffect(() => {
     const element = root.current!;
     const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
+      if (!context.conditions?.motion) return;
+      const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(element);
-      gsap.fromTo(element, { y: 85, rotateX: 7, scale: .965, transformPerspective: 1200 }, { y: 0, rotateX: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: element, start: 'top 98%', end: 'top 46%', scrub: .6, invalidateOnRefresh: true } });
+      gsap.fromTo(element, { y: small ? 25 : 85, rotateX: small ? 2 : 7, scale: small ? .99 : .965, transformPerspective: 1200 }, { y: 0, rotateX: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: element, start: 'top 98%', end: 'top 46%', scrub: .6, invalidateOnRefresh: true } });
       const details = q('.industry-flow-node, .service-icon, .about-art > img');
-      if (details.length) gsap.fromTo(details, { x: 45, y: 20, rotation: 5 }, { x: 0, y: 0, rotation: 0, stagger: .12, ease: 'none', scrollTrigger: { trigger: element, start: 'top 90%', end: 'center 45%', scrub: .7 } });
+      if (details.length) gsap.fromTo(details, { x: small ? 12 : 45, y: small ? 8 : 20, rotation: small ? 2 : 5 }, { x: 0, y: 0, rotation: 0, stagger: .12, ease: 'none', scrollTrigger: { trigger: element, start: 'top 90%', end: 'center 45%', scrub: .7 } });
     });
     return () => media.revert();
   }, []);

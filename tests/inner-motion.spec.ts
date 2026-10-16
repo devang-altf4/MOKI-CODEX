@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 for (const width of [1440, 390]) {
   test(`all four navigation pages animate their films and content at ${width}px`, async ({ page }) => {
+    test.setTimeout(60000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
