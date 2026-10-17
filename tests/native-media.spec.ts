@@ -9,7 +9,7 @@ for (const width of [390, 1440]) {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     for (const theme of ['light', 'dark'] as const) {
       if (theme === 'dark') await page.getByRole('button', { name: 'Switch to dark mode' }).click();
-      const suffix = theme === 'light' ? `-light${width < 701 ? '-mobile' : ''}` : '';
+      const suffix = theme === 'light' ? '-light-hd' : '';
       for (const route of ['/', '/about']) {
         if (route === '/about') await page.goto(route, { waitUntil: 'domcontentloaded' });
         const film = page.locator(route === '/' ? '.cinematic-scene video' : '.inner-visual video');
@@ -17,7 +17,7 @@ for (const width of [390, 1440]) {
         await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentSrc)).toContain(`moki-system-loop${suffix}.mp4`);
         await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
         await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(.2);
-        expect(await film.evaluate((video: HTMLVideoElement) => video.videoWidth)).toBe(theme === 'dark' ? 1920 : width < 701 ? 960 : 1600);
+        expect(await film.evaluate((video: HTMLVideoElement) => video.videoWidth)).toBe(1920);
         await expect(film).toHaveAttribute('poster', `/images/moki-system${suffix}.webp`);
         await page.evaluate(() => document.fonts.ready);
         await page.screenshot({ path: `artifacts/native-${route === '/' ? 'hero' : 'about'}-${theme}-${width}.png` });
@@ -26,7 +26,7 @@ for (const width of [390, 1440]) {
     }
     await page.getByRole('button', { name: 'Switch to light mode' }).click();
     await page.setViewportSize({ width: width === 390 ? 1440 : 390, height: 900 });
-    const resized = width === 390 ? '-light' : '-light-mobile';
+    const resized = '-light-hd';
     const film = page.locator('.cinematic-scene video');
     await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentSrc)).toContain(`moki-system-loop${resized}.mp4`);
     await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(.2);
