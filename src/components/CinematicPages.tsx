@@ -23,7 +23,7 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
   useEffect(() => {
     const element = root.current!, film = video.current!;
     const media = gsap.matchMedia();
-    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px), (max-width: 960px) and (max-height: 500px)' }, context => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 980px)' }, context => {
       if (!context.conditions?.motion) return;
       const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(element);
@@ -33,7 +33,7 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
       tl.to(q('.inner-visual'), { y: small ? -25 : -130, scale: small ? 1.05 : 1.26, rotation: small ? 3 : 7 }, 0)
         .to(q('.inner-intro-copy'), { y: small ? -18 : -90 }, 0)
         .to(q('.inner-orbit-word'), { xPercent: -23 }, 0)
-        .to(q('.inner-float'), { y: (i: number) => (i % 2 ? -120 : 85) * (small ? .15 : 1), rotation: (i: number) => i % 2 ? -9 : 9, stagger: .03 }, 0)
+        .to(q('.inner-float'), { y: (i: number) => small ? -8 : (i % 2 ? -120 : 85), rotation: (i: number) => small ? 0 : (i % 2 ? -9 : 9), stagger: .03 }, 0)
         .to(q('.inner-scroll-line i'), { scaleY: 1 }, 0);
       let visible = false;
       const update = () => { if (visible && document.visibilityState === 'visible') void film.play().catch(() => {}); else film.pause(); };

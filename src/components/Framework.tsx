@@ -27,9 +27,9 @@ export default function Framework() {
       root.style.setProperty('--story-pan', `${(p - .5) * 65}px`);
       const beat = chapterMotion(p), still = query.matches;
       const pan = compact ? (beat.pan - .5) * stageWidth * .28 : viewportWidth * beat.pan - cameraOrigin;
-      stage.style.transform = still ? 'none' : `perspective(1600px) translate3d(${pan}px,0,0) rotateY(${beat.yaw}deg) rotateZ(${beat.roll}deg) scale(${compact ? .94 + (beat.scale - 1) * .35 : beat.scale})`;
+      stage.style.transform = still ? 'none' : `perspective(1600px) translate3d(${pan}px,0,0) rotateY(${beat.yaw * (compact ? .6 : 1)}deg) rotateZ(${beat.roll * (compact ? .65 : 1)}deg) scale(${compact ? .97 + (beat.scale - 1) * .25 : beat.scale})`;
       heading.style.opacity = still ? '1' : String(beat.opacity);
-      heading.style.transform = still ? 'none' : `perspective(1000px) translate3d(${beat.x}px,${beat.y}px,0) rotateX(${beat.tilt}deg)`;
+      heading.style.transform = still ? 'none' : `perspective(1000px) translate3d(${beat.x * (compact ? .35 : 1)}px,${beat.y * (compact ? .45 : 1)}px,0) rotateX(${beat.tilt * (compact ? .4 : 1)}deg)`;
       copy.style.opacity = still ? '1' : String(beat.bodyOpacity);
       copy.style.transform = still ? 'none' : `translate3d(${beat.x * .45}px,${beat.y * .6}px,0)`;
       number.style.opacity = still ? '1' : String(.35 + beat.opacity * .65);
@@ -76,7 +76,7 @@ export default function Framework() {
       const narrow = stageWidth <= 700;
       compact = root.clientWidth <= 700 || (innerHeight <= 500 && root.clientWidth <= 960);
       const viewHeight = 2 * Math.tan(17.5 * Math.PI / 180) * (narrow ? 12 : 14);
-      unit = stage.clientHeight / viewHeight * (narrow ? Math.min(.88, viewHeight * stageWidth / stage.clientHeight / 7.6) : 1.18); centerX = narrow ? 0 : stageWidth * .17;
+      unit = stage.clientHeight / viewHeight * (narrow ? Math.min(1.08, viewHeight * stageWidth / stage.clientHeight / 7.6) : 1.18); centerX = narrow ? 0 : stageWidth * .17;
       const pivot = narrow ? .5 : .67;
       cameraOrigin = stage.offsetLeft + stage.clientWidth * pivot;
       stage.style.transformOrigin = `${pivot * 100}% 50%`;

@@ -50,7 +50,7 @@ function Navigation() {
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(([to, name]) => <NavLink to={to} key={to}>{name}</NavLink>)}</nav>
       <div className="nav-actions"><ThemeToggle /><Button className="nav-cta" to="/contact">Let’s talk</Button><button ref={menuButton} className="menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></div>
     </div>
-    <nav className="mobile-nav" id="mobile-nav" hidden={!open} aria-label="Mobile navigation">{links.map(([to, name], i) => <NavLink to={to} key={to}><span className="mono">0{i + 1}</span>{name}<ArrowUpRight /></NavLink>)}<Link to="/contact"><span className="mono">05</span>Start a conversation<ArrowUpRight /></Link><p>Smarter Systems. Simpler Business.</p></nav>
+    <nav className="mobile-nav" id="mobile-nav" hidden={!open} aria-label="Mobile navigation">{links.map(([to, name], i) => <NavLink to={to} key={to}><span className="mono">0{i + 1}</span>{name}<ArrowUpRight /></NavLink>)}<Link to="/contact" className="mobile-contact"><span className="mono">05</span>Start a conversation<ArrowUpRight /></Link><p>Smarter Systems. Simpler Business.</p></nav>
   </header>;
 }
 
@@ -88,7 +88,7 @@ function Hero() {
       <div className="hero-copy">
         <div className="hero-eyebrow hero-after"><span className="status-dot" />AI & AUTOMATION. BUILT AROUND YOU.</div>
         <h1 className="hero-title"><span>Less busywork.</span><span>More <em>business.</em></span></h1>
-        <p className="hero-description hero-after">We put AI to work, automate the repetitive,<br className="desktop-break" /> and connect your tools. So your business<br className="desktop-break" /> moves forward, together.</p>
+        <p className="hero-description hero-after"><span className="hero-description-full">We put AI to work, automate the repetitive,<br className="desktop-break" /> and connect your tools. So your business<br className="desktop-break" /> moves forward, together.</span><span className="hero-description-compact">We put AI to work and connect your tools, so your business moves forward.</span></p>
         <div className="hero-actions hero-after"><Button to="/contact">Book a free discovery call</Button></div>
       </div>
       <div className="hero-art">

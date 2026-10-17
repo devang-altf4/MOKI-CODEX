@@ -25,7 +25,7 @@ export function useHeroScroll(root: RefObject<HTMLElement | null>) {
         .to(q('.hero-art'), {
           x: () => innerWidth > 900 ? -innerWidth * .23 : 0,
           y: () => innerWidth > 900 ? -innerHeight * .035 : -innerHeight * .18,
-          scale: () => innerWidth > 900 ? 1.48 : 1.65, rotation: -8, duration: .85,
+          scale: () => innerWidth > 900 ? 1.48 : 1.3, rotation: () => innerWidth > 900 ? -8 : -4, duration: .85,
         }, 0)
         .to(q('.hero-interface'), { autoAlpha: 0, y: 24, duration: .16 }, 0)
         .to(q('.hero-halo'), { scale: 1.8, opacity: .85, duration: 1 }, 0)
