@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { challenges, EMAIL, faqs, framework, industries, services } from './content';
 import Logo from './components/Logo';
 import { ThemeToggle } from './components/Theme';
+import MediaFilters from './components/MediaFilters';
 import { Accordion, ArrowLink, Button, Eyebrow, Reveal } from './components/Primitives';
 import Framework from './components/Framework';
 import { AssistantProvider, AssistantWidget, ConversationSection } from './components/Assistant';
@@ -189,5 +190,5 @@ function NotFound() {
 }
 
 export default function App() {
-  return <AssistantProvider><a href="#main-content" className="skip-link">Skip to content</a><RouteEffects /><Navigation /><main id="main-content" tabIndex={-1}><Routes><Route path="/" element={<Home />} /><Route path="/solutions" element={<SolutionsPage />} /><Route path="/how-it-works" element={<MethodPage />} /><Route path="/industries" element={<IndustriesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/privacy" element={<PrivacyPage />} /><Route path="/type-study" element={<TypeStudy />} /><Route path="*" element={<NotFound />} /></Routes></main><Footer /><AssistantWidget /></AssistantProvider>;
+  return <AssistantProvider><MediaFilters /><a href="#main-content" className="skip-link">Skip to content</a><RouteEffects /><Navigation /><main id="main-content" tabIndex={-1}><Routes><Route path="/" element={<Home />} /><Route path="/solutions" element={<SolutionsPage />} /><Route path="/how-it-works" element={<MethodPage />} /><Route path="/industries" element={<IndustriesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/privacy" element={<PrivacyPage />} /><Route path="/type-study" element={<TypeStudy />} /><Route path="*" element={<NotFound />} /></Routes></main><Footer /><AssistantWidget /></AssistantProvider>;
 }

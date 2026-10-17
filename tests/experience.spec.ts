@@ -9,6 +9,8 @@ test('opening explains the offer, plays the supplied film, and renders without b
   await expect(page.locator('.hero-description')).toContainText('automate');
   await expect(page.locator('.cinematic-scene')).toHaveClass(/film-loaded/);
   await expect.poll(() => page.locator('.cinematic-scene video').evaluate((v: HTMLVideoElement) => v.readyState)).toBeGreaterThanOrEqual(2);
+  const playhead = await page.locator('.cinematic-scene video').evaluate((v: HTMLVideoElement) => v.currentTime);
+  await expect.poll(() => page.locator('.cinematic-scene video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(playhead + .2);
   await expect(page.locator('.hero-description')).toHaveCSS('opacity', '1');
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: 'artifacts/home-desktop.png' });

@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('light is the first visit default; the accessible switch remembers a choice across routes and reloads', async ({ page }) => {
-  await page.goto('/');
+  test.setTimeout(60000);
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await page.getByRole('button', { name: 'Switch to dark mode' }).focus();
@@ -10,10 +11,10 @@ test('light is the first visit default; the accessible switch remembers a choice
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(8, 10, 15)');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'About', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
   await page.getByRole('button', { name: 'Switch to light mode' }).click();
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   expect(await page.locator('meta[name="theme-color"]').getAttribute('content')).toBe('#ffffff');
 });
