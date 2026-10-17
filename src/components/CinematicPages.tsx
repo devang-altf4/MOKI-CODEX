@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Eyebrow } from './Primitives';
+import { useMokiArtwork } from './useMokiArtwork';
 
 gsap.registerPlugin(ScrollTrigger);
 export type PageScene = 'solutions' | 'method' | 'industries' | 'about';
@@ -16,7 +17,9 @@ const scenes = {
 export function CinematicIntro({ scene, eyebrow, title, accent, description }: { scene: PageScene; eyebrow: string; title: string; accent: string; description: string }) {
   const root = useRef<HTMLElement>(null), video = useRef<HTMLVideoElement>(null);
   const config = scenes[scene];
-  const poster = config.clip ? `/images/method/${config.clip}-end.webp` : '/images/moki-system.webp';
+  const artwork = useMokiArtwork();
+  const poster = config.clip ? `/images/method/${config.clip}-end.webp` : artwork.poster;
+  const filmSource = config.clip ? `/videos/method/${config.clip}.mp4` : artwork.film;
   useEffect(() => {
     const element = root.current!, film = video.current!;
     const media = gsap.matchMedia();
@@ -39,11 +42,11 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
       return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update); film.pause(); };
     });
     return () => { media.revert(); film.pause(); };
-  }, [scene]);
+  }, [scene, filmSource]);
   return <section className={`cinematic-intro intro-${scene}`} ref={root} aria-label={eyebrow}>
     <div className="inner-orbit-word" aria-hidden="true">{config.word}</div>
     <div className="inner-intro-copy container"><Eyebrow>{eyebrow}</Eyebrow><h1><span className="inner-title-mask"><span className="inner-title-line">{title}</span></span><span className="inner-title-mask"><em className="inner-title-line">{accent}</em></span></h1><p>{description}</p><a className="inner-scroll-link" href={`#${scene}-content`}><span className="inner-scroll-line"><i /></span>SCROLL TO EXPLORE<ArrowDown size={15} /></a></div>
-    <div className="inner-visual" aria-hidden="true"><div className="inner-visual-tilt"><img src={poster} alt="" fetchPriority="high" /><video ref={video} src={config.clip ? `/videos/method/${config.clip}.mp4` : '/videos/moki-system-loop.mp4'} poster={poster} muted playsInline loop={!config.clip} preload="metadata" /></div>{config.labels.map((label, index) => <div className={`inner-float inner-float-${index}`} key={label}><span>0{index + 1}</span>{label}<ArrowUpRight size={14} /></div>)}</div>
+    <div className="inner-visual" aria-hidden="true"><div className="inner-visual-tilt"><img src={poster} alt="" fetchPriority="high" /><video ref={video} src={filmSource} poster={poster} muted playsInline loop={!config.clip} preload="metadata" /></div>{config.labels.map((label, index) => <div className={`inner-float inner-float-${index}`} key={label}><span>0{index + 1}</span>{label}<ArrowUpRight size={14} /></div>)}</div>
     <div className="inner-intro-meta container"><span>{config.caption}</span><span>EXPLORE MOKI / {config.number}</span></div>
   </section>;
 }

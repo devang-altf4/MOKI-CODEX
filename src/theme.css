@@ -28,7 +28,6 @@
   --header: #ffffff;
 }
 body { background: var(--bg); color: var(--ink); }
-.media-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 .theme-toggle { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; color: var(--ink); background: var(--control); border: 1px solid var(--line); border-radius: 50%; transition: background .2s, border-color .2s; }
 .theme-toggle:hover { background: var(--tint); border-color: var(--blue); }
 .site-header { background: var(--header); border-color: var(--line); }
@@ -78,9 +77,9 @@ body { background: var(--bg); color: var(--ink); }
   .hero-next h2 { text-shadow: 0 3px 35px #ffffff; }
   .hero-next em { color: var(--accent); }
   .hero-orbit-word { -webkit-text-stroke-color: #668bc8; }
-  /* Light artwork uses cobalt motion and silver tools on the white surface. */
+  /* Light colours are baked into the media, so playback needs no live grade. */
   .cinematic-scene { mix-blend-mode: multiply; }
-  .cinematic-scene > img, .cinematic-scene > video { filter: url(#moki-light-artwork); }
+  .cinematic-scene > img, .cinematic-scene > video { filter: none; }
   .hero-scroll-progress { background: #dce6f6; }
   .hero-scroll-fill { background: #2458cf; }
 
@@ -173,7 +172,7 @@ body { background: var(--bg); color: var(--ink); }
   .inner-orbit-word { -webkit-text-stroke-color: #adc3e53b; }
   .inner-visual-tilt img, .inner-visual-tilt video { filter: invert(1) hue-rotate(180deg) saturate(.9); mix-blend-mode: multiply; }
   .intro-about .inner-visual-tilt { mix-blend-mode: multiply; }
-  .intro-about .inner-visual-tilt img, .intro-about .inner-visual-tilt video { filter: url(#moki-light-artwork-cover); mix-blend-mode: normal; }
+  .intro-about .inner-visual-tilt img, .intro-about .inner-visual-tilt video { filter: none; mix-blend-mode: normal; }
   .inner-float { color: var(--copy); background: #ffffffed; border-color: var(--line); box-shadow: 0 18px 55px #244b9112; }
   .inner-float > span { color: var(--blue); }
   .page-intro { background: radial-gradient(ellipse at 90% 40%,var(--wash),transparent 55%); }

@@ -22,9 +22,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={{ theme, toggle: () => setTheme(current => current === 'light' ? 'dark' : 'light') }}>{children}</ThemeContext.Provider>;
 }
 
-export function ThemeToggle() {
+export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error('ThemeToggle needs ThemeProvider');
+  if (!context) throw new Error('useTheme needs ThemeProvider');
+  return context;
+}
+
+export function ThemeToggle() {
+  const context = useTheme();
   const dark = context.theme === 'dark';
   return <button type="button" className="theme-toggle" onClick={context.toggle} aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`} title={`Switch to ${dark ? 'light' : 'dark'} mode`}>
     {dark ? <Sun size={19} aria-hidden="true" /> : <Moon size={19} aria-hidden="true" />}

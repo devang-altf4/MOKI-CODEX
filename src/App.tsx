@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { challenges, EMAIL, faqs, framework, industries, services } from './content';
 import Logo from './components/Logo';
 import { ThemeToggle } from './components/Theme';
-import MediaFilters from './components/MediaFilters';
+import { useMokiArtwork } from './components/useMokiArtwork';
 import { Accordion, ArrowLink, Button, Eyebrow, Reveal } from './components/Primitives';
 import Framework from './components/Framework';
 import { AssistantProvider, AssistantWidget, ConversationSection } from './components/Assistant';
@@ -55,6 +55,7 @@ function Navigation() {
 }
 
 function CinematicFilm() {
+  const { film, poster } = useMokiArtwork();
   const video = useRef<HTMLVideoElement>(null);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -65,8 +66,8 @@ function CinematicFilm() {
     const observer = new IntersectionObserver(([e]) => { visible = e.isIntersecting; update(); }); observer.observe(el);
     query.addEventListener('change', update); document.addEventListener('visibilitychange', update); update();
     return () => { observer.disconnect(); query.removeEventListener('change', update); document.removeEventListener('visibilitychange', update); el.pause(); };
-  }, []);
-  return <div className={`cinematic-scene ${loaded ? 'film-loaded' : ''}`}><img src="/images/moki-system.webp" alt="A sculptural blue Moki mark surrounded by connected business tools" fetchPriority="high" /><video ref={video} src="/videos/moki-system-loop.mp4" poster="/images/moki-system.webp" muted playsInline loop preload="metadata" onLoadedData={() => setLoaded(true)} onError={() => setLoaded(false)} aria-hidden="true" /></div>;
+  }, [film]);
+  return <div className={`cinematic-scene ${loaded ? 'film-loaded' : ''}`}><img src={poster} alt="A sculptural blue Moki mark surrounded by connected business tools" fetchPriority="high" /><video ref={video} src={film} poster={poster} muted playsInline loop preload="metadata" onLoadStart={() => setLoaded(false)} onLoadedData={() => setLoaded(true)} onError={() => setLoaded(false)} aria-hidden="true" /></div>;
 }
 
 function Hero() {
@@ -190,5 +191,5 @@ function NotFound() {
 }
 
 export default function App() {
-  return <AssistantProvider><MediaFilters /><a href="#main-content" className="skip-link">Skip to content</a><RouteEffects /><Navigation /><main id="main-content" tabIndex={-1}><Routes><Route path="/" element={<Home />} /><Route path="/solutions" element={<SolutionsPage />} /><Route path="/how-it-works" element={<MethodPage />} /><Route path="/industries" element={<IndustriesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/privacy" element={<PrivacyPage />} /><Route path="/type-study" element={<TypeStudy />} /><Route path="*" element={<NotFound />} /></Routes></main><Footer /><AssistantWidget /></AssistantProvider>;
+  return <AssistantProvider><a href="#main-content" className="skip-link">Skip to content</a><RouteEffects /><Navigation /><main id="main-content" tabIndex={-1}><Routes><Route path="/" element={<Home />} /><Route path="/solutions" element={<SolutionsPage />} /><Route path="/how-it-works" element={<MethodPage />} /><Route path="/industries" element={<IndustriesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/privacy" element={<PrivacyPage />} /><Route path="/type-study" element={<TypeStudy />} /><Route path="*" element={<NotFound />} /></Routes></main><Footer /><AssistantWidget /></AssistantProvider>;
 }

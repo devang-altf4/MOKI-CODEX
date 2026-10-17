@@ -4,8 +4,8 @@ const orbitArea = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http:/
 const markArea = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><path d="M670 275 954 469 1240 278 1256 298 1256 743 1119 655 1120 509 972 634 953 622 784 500 784 656 664 741Z" fill="white" stroke="white" stroke-width="12" stroke-linejoin="round"/></svg>');
 const betweenTools = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><path fill="white" fill-rule="evenodd" d="M0 0H1920V1080H0Z M402 192 558 148 604 273 446 320Z M1252 63 1424 82 1446 143 1400 301 1215 274 1211 157Z M315 681 534 678 555 888 315 890Z M1546 383 1615 390 1687 475 1650 647 1485 610Z M1163 771 1307 745 1375 793 1388 894 1357 939 1200 978 1205 933 1141 935 1128 809Z"/></svg>');
 
-/** Blue light and silver tools for light mode; the original film stays intact. */
-export default function MediaFilters() {
+/** Build-time grade for prepare-light-hero.mjs. Keep out of the shipped app. */
+export default function LightArtworkGrade() {
   return <svg className="media-filter-definitions" width="0" height="0" aria-hidden="true" focusable="false">
     <defs>{(['meet', 'slice'] as const).map(fit =>
       <filter key={fit} id={`moki-light-artwork${fit === 'slice' ? '-cover' : ''}`} x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
