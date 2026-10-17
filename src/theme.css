@@ -78,7 +78,7 @@ body { background: var(--bg); color: var(--ink); }
   .hero-next h2 { text-shadow: 0 3px 35px #ffffff; }
   .hero-next em { color: var(--accent); }
   .hero-orbit-word { -webkit-text-stroke-color: #668bc8; }
-  /* Only neutral surroundings change; the original blue pixels stay blue. */
+  /* Light artwork uses cobalt motion and silver tools on the white surface. */
   .cinematic-scene { mix-blend-mode: multiply; }
   .cinematic-scene > img, .cinematic-scene > video { filter: url(#moki-light-artwork); }
   .hero-scroll-progress { background: #dce6f6; }
@@ -172,7 +172,8 @@ body { background: var(--bg); color: var(--ink); }
   .inner-scroll-line i { background: #2458cf; }
   .inner-orbit-word { -webkit-text-stroke-color: #adc3e53b; }
   .inner-visual-tilt img, .inner-visual-tilt video { filter: invert(1) hue-rotate(180deg) saturate(.9); mix-blend-mode: multiply; }
-  .intro-about .inner-visual-tilt img, .intro-about .inner-visual-tilt video { filter: url(#moki-light-artwork-cover); }
+  .intro-about .inner-visual-tilt { mix-blend-mode: multiply; }
+  .intro-about .inner-visual-tilt img, .intro-about .inner-visual-tilt video { filter: url(#moki-light-artwork-cover); mix-blend-mode: normal; }
   .inner-float { color: var(--copy); background: #ffffffed; border-color: var(--line); box-shadow: 0 18px 55px #244b9112; }
   .inner-float > span { color: var(--blue); }
   .page-intro { background: radial-gradient(ellipse at 90% 40%,var(--wash),transparent 55%); }
