@@ -31,7 +31,7 @@ The `/api/chat` handler runs on the server in both the development server and `n
 - The conversation section brings expressive type, moving orbital details, and an animated Gemini console into view. A shared chat dialog is available throughout the site.
 - Reduced-motion preferences provide compact sections, still visuals, and manual controls.
 - The opening keeps one film without presentation-mode controls or extra helper captions. Contact and discovery-call actions use filled buttons.
-- First visits use a white-and-blue light theme. The sun/moon button in the navigation switches themes and remembers the choice locally. It also works when browser storage is blocked. Theme changes update the existing method scene in place without resetting its scroll position or rebuilding WebGL.
+- First visits use the selected **Charcoal + blue** light palette: white surfaces, charcoal headings, neutral grey body text, and blue branding, buttons, and interactive accents. The sun/moon button in the navigation switches themes and remembers the choice locally. It also works when browser storage is blocked. Theme changes update the existing method scene in place without resetting its scroll position or rebuilding WebGL.
 - Phone layouts reserve separate space for chapter headings, 3D scenes, copy, and tabs. Larger body text and touch targets, stacked inner-page introductions, a compact chat launcher, and landscape layouts keep content and controls accessible.
 
 The selected type direction is **A — Bold + expressive**: Barlow Condensed headlines and Cormorant Garamond italic accents, with DM Sans body text. `/type-study` retains the visual comparison.

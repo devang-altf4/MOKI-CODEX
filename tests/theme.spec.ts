@@ -64,7 +64,7 @@ for (const width of [320, 390, 768, 1440]) {
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),path).toBeTruthy();
         if (theme === 'light' && path === '/contact') {
           await expect(page.getByLabel('Your name')).toHaveCSS('background-color','rgb(255, 255, 255)');
-          await expect(page.getByLabel('Your name')).toHaveCSS('color','rgb(21, 37, 64)');
+          await expect(page.getByLabel('Your name')).toHaveCSS('color','rgb(25, 27, 32)');
         }
         if (width === 390 || width === 1440) await page.screenshot({path:`artifacts/theme-${theme}-${path.slice(1)}-${width}.png`});
       }
