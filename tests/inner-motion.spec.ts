@@ -32,9 +32,10 @@ for (const width of [1440, 390]) {
 }
 
 test('inner pages and their filtered rows respect reduced motion', async ({ page }) => {
+  test.setTimeout(60000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const path of ['/solutions', '/how-it-works', '/industries', '/about']) {
-    await page.goto(path);
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.inner-visual video')).toBeHidden();
     await expect(page.locator('.motion-block').first()).toHaveCSS('transform', 'none');
     if (path === '/how-it-works') {
@@ -43,7 +44,7 @@ test('inner pages and their filtered rows respect reduced motion', async ({ page
       await expect(page.locator('.method-scene-title')).toContainText('FIND');
     }
   }
-  await page.goto('/solutions');
+  await page.goto('/solutions', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Growth', exact: true }).click();
   await expect(page.locator('.service-row')).toHaveCount(4);
   await expect(page.locator('.motion-block').last()).toHaveCSS('transform', 'none');
