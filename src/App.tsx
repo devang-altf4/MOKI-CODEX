@@ -1,9 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, NavLink, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BrainCircuit, BriefcaseBusiness, Building2, CalendarDays, Check, CheckCircle2, ChevronRight, Copy, Factory, Globe2, Layers3, Mail, MapPin, Menu, MessageSquare, Search, ShieldCheck, Sparkles, UsersRound, Workflow, Wrench, X, ChartNoAxesCombined, PanelTop, Megaphone, Rocket } from 'lucide-react';
 import gsap from 'gsap';
 import { challenges, EMAIL, faqs, framework, industries, services } from './content';
 import Logo from './components/Logo';
+import { ThemeToggle } from './components/Theme';
+import { useMokiArtwork } from './components/useMokiArtwork';
 import { Accordion, ArrowLink, Button, Eyebrow, Reveal } from './components/Primitives';
 import Framework from './components/Framework';
 import { AssistantProvider, AssistantWidget, ConversationSection } from './components/Assistant';
@@ -12,7 +14,6 @@ import TypeStudy from './components/TypeStudy';
 import { KineticStatement, MotionPage, useHeroScroll, useContactMotion } from './components/ScrollMotion';
 import { CinematicIntro, MotionBlock, type PageScene } from './components/CinematicPages';
 
-const SystemCore = lazy(() => import('./components/SystemCore'));
 const serviceIcons = [BrainCircuit, Workflow, MessageSquare, ChartNoAxesCombined, UsersRound, Megaphone, Layers3, PanelTop, Search];
 const industryIcons = [Building2, BriefcaseBusiness, Factory, Megaphone, Wrench, Rocket];
 const links = [['/solutions', 'Solutions'], ['/how-it-works', 'Our method'], ['/industries', 'Industries'], ['/about', 'About']] as const;
@@ -47,13 +48,14 @@ function Navigation() {
     <div className="nav-inner container">
       <Link to="/" aria-label="Moki Systems home" className="home-link" onClick={() => { if (location.pathname === '/' && !location.hash) window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'}); }}><Logo /></Link>
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(([to, name]) => <NavLink to={to} key={to}>{name}</NavLink>)}</nav>
-      <div className="nav-actions"><Link className="nav-cta" to="/contact"><span>Let’s talk</span><ArrowUpRight size={16} /></Link><button ref={menuButton} className="menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></div>
+      <div className="nav-actions"><ThemeToggle /><Button className="nav-cta" to="/contact">Let’s talk</Button><button ref={menuButton} className="menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></div>
     </div>
     <nav className="mobile-nav" id="mobile-nav" hidden={!open} aria-label="Mobile navigation">{links.map(([to, name], i) => <NavLink to={to} key={to}><span className="mono">0{i + 1}</span>{name}<ArrowUpRight /></NavLink>)}<Link to="/contact"><span className="mono">05</span>Start a conversation<ArrowUpRight /></Link><p>Smarter Systems. Simpler Business.</p></nav>
   </header>;
 }
 
 function CinematicFilm() {
+  const { film, poster } = useMokiArtwork();
   const video = useRef<HTMLVideoElement>(null);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -64,13 +66,11 @@ function CinematicFilm() {
     const observer = new IntersectionObserver(([e]) => { visible = e.isIntersecting; update(); }); observer.observe(el);
     query.addEventListener('change', update); document.addEventListener('visibilitychange', update); update();
     return () => { observer.disconnect(); query.removeEventListener('change', update); document.removeEventListener('visibilitychange', update); el.pause(); };
-  }, []);
-  return <div className={`cinematic-scene ${loaded ? 'film-loaded' : ''}`}><img src="/images/moki-system.webp" alt="A sculptural blue Moki mark surrounded by connected business tools" fetchPriority="high" /><video ref={video} src="/videos/moki-system-loop.mp4" poster="/images/moki-system.webp" muted playsInline loop preload="metadata" onLoadedData={() => setLoaded(true)} onError={() => setLoaded(false)} aria-hidden="true" /></div>;
+  }, [film]);
+  return <div className={`cinematic-scene ${loaded ? 'film-loaded' : ''}`}><img src={poster} alt="A sculptural blue Moki mark surrounded by connected business tools" fetchPriority="high" /><video ref={video} src={film} poster={poster} muted playsInline loop preload="metadata" onLoadStart={() => setLoaded(false)} onLoadedData={() => setLoaded(true)} onError={() => setLoaded(false)} aria-hidden="true" /></div>;
 }
 
 function Hero() {
-  const [connected, setConnected] = useState(true);
-  const [visualMode, setVisualMode] = useState<'film' | '3d'>('film');
   const hero = useRef<HTMLElement>(null);
   useHeroScroll(hero);
   useEffect(() => {
@@ -89,20 +89,14 @@ function Hero() {
         <div className="hero-eyebrow hero-after"><span className="status-dot" />AI & AUTOMATION. BUILT AROUND YOU.</div>
         <h1 className="hero-title"><span>Less busywork.</span><span>More <em>business.</em></span></h1>
         <p className="hero-description hero-after">We put AI to work, automate the repetitive,<br className="desktop-break" /> and connect your tools. So your business<br className="desktop-break" /> moves forward, together.</p>
-        <div className="hero-actions hero-after"><Button to="/contact">Book a free discovery call</Button><a className="hero-secondary" href="#method"><span className="play-circle"><ArrowDown size={15} /></span>See it in motion</a></div>
-        <div className="hero-small hero-after"><span className="mini-line" />Practical AI. Thoughtful automation. Real possibilities.</div>
+        <div className="hero-actions hero-after"><Button to="/contact">Book a free discovery call</Button></div>
       </div>
-      <div className={`hero-art ${visualMode === '3d' ? 'live-mode' : ''}`}>
-        <div className="core-top-label hero-interface"><span className="core-cross">+</span><span>YOUR BUSINESS.<br /><b>WORKING AS ONE.</b></span></div>
-        {visualMode === 'film' ? <CinematicFilm /> : <Suspense fallback={<div className="system-core"><img src="/images/moki-system.webp" alt="Blue three-dimensional Moki mark" className="core-fallback" /></div>}><SystemCore connected={connected} /></Suspense>}
-        <div className={`core-status hero-interface ${connected ? 'is-connected' : ''}`}><span className="core-status-icon">{connected ? <Check size={14} /> : <Workflow size={14} />}</span><div><strong>{connected ? 'Everything, in its place.' : 'Sound familiar?'}</strong><span>{connected ? 'Your tools. One connected system.' : 'Good tools. Disconnected work.'}</span></div><span className="status-pulse" /></div>
-        {visualMode === '3d' && <div className="core-switch" role="group" aria-label="Compare scattered and connected business systems"><button aria-pressed={!connected} className={!connected ? 'active' : ''} onClick={() => setConnected(false)}>Scattered</button><span><ArrowRight size={13} /></span><button aria-pressed={connected} className={connected ? 'active' : ''} onClick={() => setConnected(true)}><span className="status-dot" />Connected</button></div>}
-        <div className="scene-mode hero-interface" role="group" aria-label="Choose the visual experience"><button className={visualMode === 'film' ? 'active' : ''} aria-pressed={visualMode === 'film'} onClick={() => { setVisualMode('film'); setConnected(true); }}>Cinematic</button><button className={visualMode === '3d' ? 'active' : ''} aria-pressed={visualMode === '3d'} onClick={() => setVisualMode('3d')}><Layers3 size={11} />Explore in 3D</button></div>
-        <div className="core-caption mono hero-interface">AN ILLUSTRATION OF WHAT CONNECTS</div>
+      <div className="hero-art">
+        <CinematicFilm />
       </div>
     </div>
     <div className="hero-next container"><span className="mono">YOUR TOOLS. YOUR TEAM. YOUR NEXT CHAPTER.</span><h2>One connected<br /><em>business.</em></h2><p>From scattered tasks to a system that moves with you.</p></div>
-    <div className="container hero-bottom hero-interface"><span>AI · AUTOMATION · WEBSITES & SEO</span><span><Globe2 size={12} />SOUTH FLORIDA → EVERYWHERE</span><a href="#method">SCROLL TO CONNECT<ArrowDown size={13} /></a></div>
+    <div className="container hero-bottom hero-interface"><span>AI · AUTOMATION · WEBSITES & SEO</span><span><Globe2 size={12} />SOUTH FLORIDA → EVERYWHERE</span></div>
     <div className="hero-scroll-progress" aria-hidden="true"><span className="hero-scroll-fill" /></div>
   </div></section>;
 }
@@ -130,7 +124,7 @@ function ClosingCta() {
 }
 
 function Footer() {
-  return <footer className="site-footer"><div className="container"><div className="footer-main"><div className="footer-brand"><Link to="/" aria-label="Moki Systems home"><Logo /></Link><p>Smarter Systems.<br />Simpler Business.</p></div><div className="footer-links"><p className="mono">EXPLORE</p>{links.map(([to, name]) => <Link to={to} key={to}>{name}</Link>)}</div><div className="footer-contact"><p className="mono">A GOOD PLACE TO START</p><a href={`mailto:${EMAIL}`}>{EMAIL}<ArrowUpRight size={15} /></a><span>South Florida, USA<br />Connected worldwide.</span><Link to="/contact" className="footer-call">Let’s make work flow<ArrowRight size={16} /></Link></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Moki Systems LLC</span><span>BUSINESS FIRST. TECHNOLOGY WITH PURPOSE.</span><Link to="/privacy">Privacy</Link><button aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={15} /></button></div><div className="footer-word" aria-hidden="true">moki<span>®</span></div></div></footer>;
+  return <footer className="site-footer"><div className="container"><div className="footer-main"><div className="footer-brand"><Link to="/" aria-label="Moki Systems home"><Logo /></Link><p>Smarter Systems.<br />Simpler Business.</p></div><div className="footer-links"><p className="mono">EXPLORE</p>{links.map(([to, name]) => <Link to={to} key={to}>{name}</Link>)}</div><div className="footer-contact"><p className="mono">A GOOD PLACE TO START</p><a href={`mailto:${EMAIL}`}>{EMAIL}<ArrowUpRight size={15} /></a><span>South Florida, USA<br />Connected worldwide.</span><Link to="/contact" className="button button-primary footer-call">Let’s make work flow<ArrowRight size={16} /></Link></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Moki Systems LLC</span><span>BUSINESS FIRST. TECHNOLOGY WITH PURPOSE.</span><Link to="/privacy">Privacy</Link><button aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={15} /></button></div><div className="footer-word" aria-hidden="true">moki<span>®</span></div></div></footer>;
 }
 
 function Home() {
@@ -189,7 +183,7 @@ function ContactPage() {
 }
 
 function PrivacyPage() {
-  return <><PageIntro eyebrow="CLEAR AND SIMPLE" title="Your information." accent="Your choice." description="How this Moki Systems website preview handles information." /><section className="legal-copy section-space"><div className="container"><p className="mono">WEBSITE PREVIEW · OCTOBER 2026</p><h2>Contacting Moki</h2><p>The consultation form prepares an email draft in your browser. It does not send your details to a server, a CRM, or a booking calendar. When you choose “Open email app,” your device’s email application receives the draft. You decide whether to send it. Your email provider’s own privacy terms apply to that service.</p><h2>Moki AI guide</h2><p>When you send a chat message, your message and the recent conversation are sent through the Moki server to Google Gemini to generate a reply. The website does not save chat transcripts or form entries to a database or browser storage. Please avoid sharing private customer information, passwords, or sensitive records. Google processes messages under the terms and data settings of the configured Gemini account. AI replies may be imperfect; confirm project details with the Moki team.</p><h2>Analytics, cookies, and storage</h2><p>This preview does not include advertising trackers, analytics scripts, marketing cookies, or a customer account system. Form entries and chat messages are not saved to browser storage. Temporary request counts are kept on the server to limit abuse; these do not include message contents. Your hosting provider may process ordinary connection information to serve the site.</p><h2>Before a public launch</h2><p>Any future booking, email delivery, CRM, analytics, or content integrations will need their own configuration and an updated privacy notice. This page describes the current preview, not a future production service.</p><h2>Questions</h2><p>Contact Moki Systems LLC at <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p></div></section></>;
+  return <><PageIntro eyebrow="CLEAR AND SIMPLE" title="Your information." accent="Your choice." description="How this Moki Systems website preview handles information." /><section className="legal-copy section-space"><div className="container"><p className="mono">WEBSITE PREVIEW · OCTOBER 2026</p><h2>Contacting Moki</h2><p>The consultation form prepares an email draft in your browser. It does not send your details to a server, a CRM, or a booking calendar. When you choose “Open email app,” your device’s email application receives the draft. You decide whether to send it. Your email provider’s own privacy terms apply to that service.</p><h2>Moki AI guide</h2><p>When you send a chat message, your message and the recent conversation are sent through the Moki server to Google Gemini to generate a reply. The website does not save chat transcripts or form entries to a database or browser storage. Please avoid sharing private customer information, passwords, or sensitive records. Google processes messages under the terms and data settings of the configured Gemini account. AI replies may be imperfect; confirm project details with the Moki team.</p><h2>Analytics, cookies, and storage</h2><p>This preview does not include advertising trackers, analytics scripts, marketing cookies, or a customer account system. Your light or dark appearance preference is saved in this browser so the site can remember your choice. Form entries and chat messages are not saved to browser storage. Temporary request counts are kept on the server to limit abuse; these do not include message contents. Your hosting provider may process ordinary connection information to serve the site.</p><h2>Before a public launch</h2><p>Any future booking, email delivery, CRM, analytics, or content integrations will need their own configuration and an updated privacy notice. This page describes the current preview, not a future production service.</p><h2>Questions</h2><p>Contact Moki Systems LLC at <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p></div></section></>;
 }
 
 function NotFound() {

@@ -1,4 +1,10 @@
-# Optional new Moki media
+# Moki hero media
+
+The approved light-mode Flow clip supplied on 17 October 2026 is saved as `moki-system-loop-light.mp4`. Its original download was `Make_light_mode_color_version_20261017193204.mp4`.
+
+Run `npm run prepare:light-hero` to copy its video stream into the public light-mode MP4 without re-encoding or colour conversion, remove audio, enable fast-start playback, and create a matching WebP poster. Run `npm run verify:light-hero` to check that every decoded public frame exactly matches this source. The dark media below remains separate.
+
+## Original dark artwork prompts
 
 The website is being built with existing assets and live 3D. These new media are optional; you do not need to wait for them to preview the website.
 

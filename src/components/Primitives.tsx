@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight, Plus, Minus } from 'lucide-react';
 
 export function ArrowLink({ to, children, className = '' }: { to: string; children: ReactNode; className?: string }) {
-  return <Link to={to} className={`arrow-link ${className}`}>{children}<ArrowUpRight size={17} /></Link>;
+  return <Link to={to} className={to.startsWith('/contact') ? `button button-primary ${className}` : `arrow-link ${className}`}>{to.startsWith('/contact') ? <span>{children}</span> : children}<ArrowUpRight size={17} /></Link>;
 }
 export function Button({ to, children, variant = 'primary', className = '' }: { to: string; children: ReactNode; variant?: 'primary' | 'outline' | 'light'; className?: string }) {
   return <Link to={to} className={`button button-${variant} ${className}`}><span>{children}</span><ArrowUpRight size={18} /></Link>;

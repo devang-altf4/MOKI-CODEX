@@ -139,6 +139,19 @@ export default function MethodScene({ onRenderer }: { onRenderer: (renderer: Met
       system.position.set(narrow ? 0 : viewHeight * camera.aspect * .17, narrow ? -.12 : .05, 0); system.scale.setScalar(narrow ? Math.min(.88, viewHeight * camera.aspect / 7.6) : 1.18);
       draw(lastProgress);
     };
+    // Change the existing scene in place: theme switches must not rebuild WebGL
+    // or reset the visitor's chapter and scroll position.
+    const updateTheme = () => {
+      const light = document.documentElement.dataset.theme === 'light';
+      renderer.setClearColor(light ? '#ffffff' : '#080a0f');
+      body.color.set(light ? '#c4cfdd' : '#3a3e46');
+      detail.color.set(light ? '#667b96' : '#727982');
+      blue.emissiveIntensity = light ? .35 : .8;
+      draw(lastProgress);
+    };
+    const themeObserver = new MutationObserver(updateTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    updateTheme();
     const contextLost = (event: Event) => { event.preventDefault(); lost = true; onRenderer(null); };
     const contextRestored = () => { lost = false; onRenderer(draw); draw(lastProgress); };
     renderer.domElement.addEventListener('webglcontextlost', contextLost); renderer.domElement.addEventListener('webglcontextrestored', contextRestored);
@@ -146,7 +159,7 @@ export default function MethodScene({ onRenderer }: { onRenderer: (renderer: Met
     void warmup.then(() => { if (!disposed) onRenderer(draw); }).catch(() => { if (!disposed) onRenderer(null); });
     return () => {
       disposed = true;
-      onRenderer(null); observer.disconnect(); renderer.domElement.removeEventListener('webglcontextlost', contextLost); renderer.domElement.removeEventListener('webglcontextrestored', contextRestored);
+      onRenderer(null); observer.disconnect(); themeObserver.disconnect(); renderer.domElement.removeEventListener('webglcontextlost', contextLost); renderer.domElement.removeEventListener('webglcontextrestored', contextRestored);
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
       scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry) geometries.add(mesh.geometry); if (mesh.material) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(material => materials.add(material)); });
       renderer.domElement.remove();

@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
     "test:server": "node --test server/assistant.test.mjs",
-    "prepare:chapters": "node scripts/prepare-chapters.mjs"
+    "prepare:chapters": "node scripts/prepare-chapters.mjs",
+    "prepare:light-hero": "node scripts/prepare-light-hero.mjs",
+    "verify:light-hero": "node scripts/verify-light-hero.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

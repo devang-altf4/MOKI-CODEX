@@ -19,7 +19,8 @@ for (const viewport of sizes) {
       expect(art.height).toBeGreaterThan(100);
     }
     const launcher = (await page.getByRole('button',{name:'Open Moki AI chat',exact:true}).boundingBox())!;
-    expect(overlaps((await page.locator('.scene-mode').boundingBox())!,launcher)).toBeFalsy();
+    expect(overlaps((await page.locator('.hero-actions').boundingBox())!,launcher)).toBeFalsy();
+    expect(overlaps((await page.getByRole('button',{name:'Switch to dark mode'}).boundingBox())!,(await page.locator('.nav-cta').boundingBox())!)).toBeFalsy();
     await page.screenshot({path:`artifacts/mobile-fixed-home-${viewport.width}.png`});
 
     const method=page.locator('#method');
