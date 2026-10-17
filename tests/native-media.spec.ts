@@ -9,7 +9,7 @@ for (const width of [390, 1440]) {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     for (const theme of ['light', 'dark'] as const) {
       if (theme === 'dark') await page.getByRole('button', { name: 'Switch to dark mode' }).click();
-      const suffix = theme === 'light' ? '-light-hd' : '';
+      const suffix = theme === 'light' ? '-light-flow' : '';
       for (const route of ['/', '/about']) {
         if (route === '/about') await page.goto(route, { waitUntil: 'domcontentloaded' });
         const film = page.locator(route === '/' ? '.cinematic-scene video' : '.inner-visual video');
@@ -26,7 +26,7 @@ for (const width of [390, 1440]) {
     }
     await page.getByRole('button', { name: 'Switch to light mode' }).click();
     await page.setViewportSize({ width: width === 390 ? 1440 : 390, height: 900 });
-    const resized = '-light-hd';
+    const resized = '-light-flow';
     const film = page.locator('.cinematic-scene video');
     await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentSrc)).toContain(`moki-system-loop${resized}.mp4`);
     await expect.poll(() => film.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(.2);
