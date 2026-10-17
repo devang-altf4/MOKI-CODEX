@@ -79,15 +79,17 @@ test('scroll sequence advances through all MOKI stages', async ({ page }) => {
   await page.screenshot({ path: 'artifacts/method-desktop.png' });
 });
 
-test('live 3D mode renders and the scattered/connected controls change state', async ({ page }) => {
+test('the opening keeps its film and clear calls to action without presentation controls', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
-  await expect(page.locator('.core-ready canvas')).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Scattered', exact: true }).click();
-  await expect(page.locator('.core-status')).toContainText('Good tools. Disconnected work.');
-  await page.getByRole('button', { name: 'Connected', exact: true }).click();
-  await expect(page.locator('.core-status')).toContainText('One connected system.');
-  await page.screenshot({ path: 'artifacts/live-3d-desktop.png' });
+  await expect(page.locator('.cinematic-scene video')).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Choose the visual experience' })).toHaveCount(0);
+  await expect(page.getByText('Practical AI. Thoughtful automation. Real possibilities.', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'SCROLL TO CONNECT' })).toHaveCount(0);
+  await expect(page.locator('.site-header .brand-type')).toHaveText('MOKISYSTEMS');
+  await expect(page.locator('.nav-cta')).toHaveCSS('background-color', 'rgb(36, 88, 207)');
+  await page.locator('.hero-actions').getByRole('link', { name: 'Book a free discovery call' }).click();
+  await expect(page).toHaveURL(/contact/);
+  await expect(page.getByLabel('Your name')).toBeVisible();
 });
 
 test('reduced motion uses a still and compact sections', async ({ page }) => {

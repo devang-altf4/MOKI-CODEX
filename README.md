@@ -30,7 +30,8 @@ The `/api/chat` handler runs on the server in both the development server and `n
 - On desktop, the solutions section stays in view while its scenarios and workflow cards change with scrolling. Phone layouts use normal document flow, bounded moving cards, and manual scenario tabs so every example remains accessible on short screens.
 - The conversation section brings expressive type, moving orbital details, and an animated Gemini console into view. A shared chat dialog is available throughout the site.
 - Reduced-motion preferences provide compact sections, still visuals, and manual controls.
-- The optional live Three.js scene lets visitors compare scattered and connected systems.
+- The opening keeps one film without presentation-mode controls or extra helper captions. Contact and discovery-call actions use filled buttons.
+- First visits use a white-and-blue light theme. The sun/moon button in the navigation switches themes and remembers the choice locally. It also works when browser storage is blocked. Theme changes update the existing method scene in place without resetting its scroll position or rebuilding WebGL.
 - Phone layouts reserve separate space for chapter headings, 3D scenes, copy, and tabs. Larger body text and touch targets, stacked inner-page introductions, a compact chat launcher, and landscape layouts keep content and controls accessible.
 
 The selected type direction is **A — Bold + expressive**: Barlow Condensed headlines and Cormorant Garamond italic accents, with DM Sans body text. `/type-study` retains the visual comparison.
@@ -40,6 +41,7 @@ The selected type direction is **A — Bold + expressive**: Barlow Condensed hea
 - Routes: `/`, `/solutions`, `/how-it-works`, `/industries`, `/about`, `/contact`, `/privacy`.
 - Company content and nine services: `src/content.ts`.
 - Assistant UI and shared conversation: `src/components/Assistant.tsx`.
+- Theme preference and palette: `src/components/Theme.tsx`, `src/theme.css`; `index.html` applies the saved choice before the page paints.
 - Gemini endpoint, company grounding, validation, request limits, and timeouts: `server/assistant.mjs`.
 - Scroll scenes: `src/components/ScrollMotion.tsx`, `Framework.tsx`, `MethodScene.tsx`, `MethodStage.tsx`, `methodMotion.ts`, `CinematicPages.tsx`, and `SolutionExplorer.tsx`.
 - Original supplied hero media: `assets-src/hero/`. Optimized public copies: `public/images/` and `public/videos/`.

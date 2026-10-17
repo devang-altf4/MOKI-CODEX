@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="en" data-type="a">
+<html lang="en" data-type="a" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080a0f" />
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      (() => {
+        let theme = 'light';
+        try { if (localStorage.getItem('moki-theme') === 'dark') theme = 'dark'; } catch {}
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'light' ? '#ffffff' : '#080a0f');
+      })();
+    </script>
     <meta name="description" content="Moki Systems helps growing businesses put AI to work, automate repetitive processes, and connect their tools. Smarter systems. Simpler business." />
     <meta name="robots" content="noindex,nofollow" />
     <meta property="og:title" content="Moki Systems — Less busywork. More business." />
