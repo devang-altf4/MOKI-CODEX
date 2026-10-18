@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('light is the first visit default; the accessible switch remembers a choice across routes and reloads', async ({ page }) => {
   test.setTimeout(60000);
   await page.goto('/', { waitUntil: 'domcontentloaded' });

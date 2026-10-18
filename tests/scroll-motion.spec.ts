@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 }, { width: 390, height: 844 }]) {
   test(`scroll visibly drives and reverses the scenes at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);

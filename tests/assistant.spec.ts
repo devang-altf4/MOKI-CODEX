@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('embedded AI conversation sends history, suggests a service, and can be reset', async ({ page }) => {
   const requests: { messages: { role: string; text: string }[] }[] = [];
   await page.route('**/api/chat', async route => {

@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 for (const width of [390, 1440]) {
   test(`hero and About play matching light and dark films without live grading at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);

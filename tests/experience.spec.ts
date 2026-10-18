@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('opening explains the offer, plays the supplied film, and renders without browser errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -40,7 +43,8 @@ test('all nine solutions are available and filtering shows the right services', 
   await expect(page.locator('.service-row')).toHaveCount(9);
 });
 
-test('consultation form prepares an honest email draft with the selected service', async ({ page }) => {
+test('consultation form saves the request and retains an email draft with the selected service', async ({ page }) => {
+  await page.route('**/api/leads', route => route.fulfill({ json: { saved: true } }));
   await page.goto('/contact?service=web-development');
   await expect(page.getByLabel('What are you curious about?')).toHaveValue('web-development');
   await page.getByLabel('Your name').fill('Preview Tester');
@@ -49,13 +53,14 @@ test('consultation form prepares an honest email draft with the selected service
   await page.getByLabel('What could work better?', { exact: false }).fill('We would like a clearer website with an easier enquiry process.');
   const posts: string[] = [];
   page.on('request', req => { if (req.method() === 'POST') posts.push(req.url()); });
-  await page.getByRole('button', { name: 'Prepare my consultation email' }).click();
-  await expect(page.getByRole('heading', { name: 'Your email draft is ready.' })).toBeVisible();
-  await expect(page.locator('.email-preview')).toContainText('Nothing has been sent or booked yet.');
+  await page.getByRole('button', { name: 'Request my discovery call' }).click();
+  await expect(page.getByRole('heading', { name: 'Your request is saved.' })).toBeVisible();
+  await expect(page.locator('.email-preview')).toContainText('Your call hasn’t been booked yet.');
   const link = page.getByRole('link', { name: 'Open email app' });
   await expect(link).toHaveAttribute('href', /^mailto:mohak@mokisystems.us\?/);
   expect(decodeURIComponent(await link.getAttribute('href') || '')).toContain('Website development');
-  expect(posts).toEqual([]);
+  expect(posts).toHaveLength(1);
+  expect(posts[0]).toContain('/api/leads');
   await page.screenshot({ path: 'artifacts/contact-desktop.png', fullPage: true });
 });
 

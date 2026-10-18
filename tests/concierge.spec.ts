@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('combined widget keeps AI drafts and history when switching views and closes on navigation', async ({ page }) => {
   await page.route('**/api/chat', route => route.fulfill({ json: { reply: 'We can connect your website to a useful enquiry workflow.', service: 'web-development' } }));
   await page.goto('/');
@@ -22,40 +25,21 @@ test('combined widget keeps AI drafts and history when switching views and close
   await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
 });
 
-test('demo call has a complete local lifecycle without backend or device access', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.assign(window, { demoMediaRequests: 0 });
-    if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia = async () => {
-      (window as unknown as { demoMediaRequests: number }).demoMediaRequests++;
-      throw new Error('Devices must not be accessed by the demo.');
-    };
-  });
-  const apiRequests: string[] = [];
-  page.on('request', request => { if (request.url().includes('/api/')) apiRequests.push(request.url()); });
+test('launch widget exposes real chat and team contact without a simulated call', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Open Moki chat and contact' }).click();
   const dialog = page.getByRole('dialog', { name: 'Moki chat and contact' });
-  await dialog.getByRole('button', { name: 'Try the call experience' }).click();
-  await expect(dialog.getByText('No one is called', { exact: false })).toBeVisible();
-  await dialog.getByRole('button', { name: 'Start demo call' }).click();
-  await expect(dialog.getByText('Opening your demo…')).toBeVisible();
-  await expect(dialog.getByText('SAMPLE CALL · PRERECORDED GREETING')).toBeVisible();
-  await dialog.getByRole('button', { name: 'Toggle demo camera' }).click();
-  await expect(dialog.getByRole('button', { name: 'Toggle demo camera' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(dialog.getByText('Sample preview', { exact: true })).toBeVisible();
-  await dialog.getByRole('button', { name: 'Toggle demo microphone' }).click();
-  await expect(dialog.getByRole('button', { name: 'Toggle demo microphone' })).toHaveAttribute('aria-pressed', 'true');
-  await dialog.getByRole('button', { name: 'End demo call' }).click();
-  await expect(dialog.getByText('That’s the experience.')).toBeVisible();
-  await dialog.getByRole('button', { name: 'Replay demo' }).click();
-  await dialog.getByRole('button', { name: 'Start demo call' }).click();
-  await dialog.getByRole('button', { name: 'End demo call' }).click();
-  await expect(dialog.getByText('That’s the experience.')).toBeVisible();
-  expect(apiRequests).toEqual([]);
-  expect(await page.evaluate(() => (window as unknown as { demoMediaRequests: number }).demoMediaRequests)).toBe(0);
+  await expect(dialog.getByRole('button', { name: 'Ask MOKI AI' })).toBeVisible();
+  await expect(dialog.getByText(/Try the call experience|Start demo call|simulated connection/i)).toHaveCount(0);
+  await expect(dialog.locator('.concierge-demo-link, .concierge-call')).toHaveCount(0);
+  await dialog.getByRole('button', { name: 'Our team', exact: true }).click();
+  await expect(dialog.getByRole('link', { name: 'mohak@mokisystems.us' })).toHaveAttribute('href', 'mailto:mohak@mokisystems.us');
+  await expect(dialog.getByRole('button', { name: /demo call/i })).toHaveCount(0);
+  await expect(dialog.locator('.concierge-team-demo')).toHaveCount(0);
   await dialog.getByRole('link', { name: 'Book a discovery call' }).click();
   await expect(page).toHaveURL(/contact/);
   await expect(dialog).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Request my discovery call' })).toBeVisible();
 });
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {
