@@ -55,9 +55,9 @@ for (const width of [320, 390, 768, 1440]) {
         await page.getByRole('button', {name:'Close navigation'}).click();
       }
       await page.screenshot({path:`artifacts/theme-${theme}-home-${width}.png`});
-      await page.getByRole('button', {name:'Open Moki AI chat',exact:true}).click();
+      await page.getByRole('button', {name:'Open Moki chat and contact',exact:true}).click();
       await expect(page.getByRole('dialog')).toBeVisible();
-      await page.getByRole('button', {name:'Close Moki AI chat',exact:true}).click();
+      await page.getByRole('button', {name:'Close Moki chat and contact',exact:true}).click();
       for (const path of ['/solutions','/how-it-works','/industries','/about','/contact','/privacy']) {
         await page.goto(path);
         await expect(page.locator('html')).toHaveAttribute('data-theme',theme);

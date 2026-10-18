@@ -18,7 +18,7 @@ for (const viewport of sizes) {
       expect(art.y).toBeGreaterThanOrEqual(actions.y+actions.height-1);
       expect(art.height).toBeGreaterThan(100);
     }
-    const launcher = (await page.getByRole('button',{name:'Open Moki AI chat',exact:true}).boundingBox())!;
+    const launcher = (await page.getByRole('button',{name:'Open Moki chat and contact',exact:true}).boundingBox())!;
     expect(overlaps((await page.locator('.hero-actions').boundingBox())!,launcher)).toBeFalsy();
     const themeButton=(await page.getByRole('button',{name:'Switch to dark mode'}).boundingBox())!;
     const menuButton=(await page.getByRole('button',{name:'Open navigation',exact:true}).boundingBox())!;
@@ -91,15 +91,16 @@ test('phone navigation pages, menu, chat and consultation form remain usable', a
   await page.goto('/contact');
   await expect(page.getByLabel('Your name')).toHaveCSS('font-size','16px');
   await expect(page.getByLabel('Work email')).toHaveCSS('font-size','16px');
-  await page.getByRole('button',{name:'Open Moki AI chat',exact:true}).click();
-  const dialog=page.getByRole('dialog',{name:'Moki AI assistant'});
+  await page.getByRole('button',{name:'Open Moki chat and contact',exact:true}).click();
+  const dialog=page.getByRole('dialog',{name:'Moki chat and contact'});
   await expect(dialog).toBeVisible();
+  await dialog.getByRole('button',{name:'AI chat',exact:true}).click();
   const box=(await dialog.boundingBox())!;
   expect(box.y).toBeGreaterThanOrEqual(0);
   expect(box.y+box.height).toBeLessThanOrEqual(667);
   await expect(dialog.getByLabel('Your message to Moki AI')).toHaveCSS('font-size','16px');
   await page.screenshot({path:'artifacts/mobile-fixed-chat.png'});
-  await dialog.getByRole('button',{name:'Close Moki AI chat'}).click();
+  await dialog.getByRole('button',{name:'Close Moki chat and contact'}).click();
   expect(errors).toEqual([]);
 });
 

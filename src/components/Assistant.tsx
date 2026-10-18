@@ -1,23 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUp, ArrowUpRight, MessageCircle, Plus, RotateCcw, Sparkles, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { ArrowUp, ArrowUpRight, Plus, RotateCcw, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { services } from '../content';
 import { Button, Eyebrow } from './Primitives';
+import { ConciergeWidget } from './Concierge';
 import '../assistant.css';
 
 gsap.registerPlugin(ScrollTrigger);
 type Message = { role: 'user' | 'assistant'; text: string; service?: string };
 const welcome: Message = { role: 'assistant', text: 'Hey, I’m Moki’s AI guide. Tell me what’s slowing your business down. We can find a useful place to start, together.' };
-type AssistantState = { messages: Message[]; busy: boolean; error: string; send: (text: string) => Promise<boolean>; clear: () => void; open: boolean; setOpen: (open: boolean) => void; inlineVisible: boolean; setInlineVisible: (visible: boolean) => void };
+type AssistantState = { messages: Message[]; busy: boolean; error: string; send: (text: string) => Promise<boolean>; clear: () => void; open: boolean; setOpen: (open: boolean) => void };
 const AssistantContext = createContext<AssistantState | null>(null);
 export const useAssistant = () => useContext(AssistantContext)!;
 
 export function AssistantProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([welcome]);
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
-  const [open, setOpen] = useState(false), [inlineVisible, setInlineVisible] = useState(false);
+  const [open, setOpen] = useState(false);
   const pending = useRef<AbortController | null>(null);
   useEffect(() => () => pending.current?.abort(), []);
   const clear = useCallback(() => { pending.current?.abort(); pending.current = null; setMessages([welcome]); setBusy(false); setError(''); }, []);
@@ -39,7 +40,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       return false;
     } finally { if (pending.current === controller) { pending.current = null; setBusy(false); } }
   };
-  return <AssistantContext.Provider value={{ messages, busy, error, send, clear, open, setOpen, inlineVisible, setInlineVisible }}>{children}</AssistantContext.Provider>;
+  return <AssistantContext.Provider value={{ messages, busy, error, send, clear, open, setOpen }}>{children}</AssistantContext.Provider>;
 }
 
 const prompts = [
@@ -48,12 +49,12 @@ const prompts = [
   ['A better website', 'We need a better website and more visibility on Google. Can Moki help?'],
 ];
 
-export function AssistantPanel({ compact = false }: { compact?: boolean }) {
+export function AssistantPanel({ compact = false, active = true }: { compact?: boolean; active?: boolean }) {
   const { messages, busy, error, send, clear } = useAssistant();
   const [draft, setDraft] = useState('');
   const log = useRef<HTMLDivElement>(null);
   const id = useId();
-  useEffect(() => { if (log.current) log.current.scrollTop = log.current.scrollHeight; }, [messages, busy, error]);
+  useEffect(() => { if (active && log.current) log.current.scrollTop = log.current.scrollHeight; }, [messages, busy, error, active]);
   const submit = async (event: FormEvent) => { event.preventDefault(); if (await send(draft)) setDraft(''); };
   return <div className={`assistant-panel ${compact ? 'assistant-compact' : ''}`}>
     <div className="assistant-topbar"><span className="assistant-avatar"><Sparkles size={20} strokeWidth={1.5} /></span><div><strong>Moki AI</strong><span>Your business, understood.</span></div><span className="assistant-powered"><span className="status-dot" />GEMINI</span><button className="assistant-reset" onClick={() => { clear(); setDraft(''); }} aria-label="Start a new AI conversation"><RotateCcw size={15} /></button></div>
@@ -69,10 +70,7 @@ export function AssistantPanel({ compact = false }: { compact?: boolean }) {
 
 export function ConversationSection() {
   const root = useRef<HTMLElement>(null);
-  const { setInlineVisible } = useAssistant();
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => setInlineVisible(entry.isIntersecting), { threshold: .2 });
-    if (root.current) observer.observe(root.current);
     const mm = gsap.matchMedia();
     mm.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
       if (!context.conditions?.motion) return;
@@ -84,16 +82,12 @@ export function ConversationSection() {
         .fromTo(q('.conversation-orbit'), { rotation: -65, scale: .5 }, { rotation: 35, scale: 1, duration: 1.2 }, 0);
       gsap.to(q('.conversation-watermark'), { xPercent: -20, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: .7 } });
     }, root);
-    return () => { observer.disconnect(); setInlineVisible(false); mm.revert(); };
-  }, [setInlineVisible]);
+    return () => mm.revert();
+  }, []);
   return <section className="conversation-section" id="experience" ref={root}><div className="conversation-watermark" aria-hidden="true">LET’S TALK.</div><div className="conversation-orbit" aria-hidden="true"><i /><i /><span>✳</span></div><div className="container conversation-layout"><div className="conversation-copy"><Eyebrow>LESS GUESSING. MORE POSSIBILITIES.</Eyebrow><h2><span>YOUR NEXT</span><span>MOVE STARTS</span><span>with a hello.</span></h2><p>No perfect brief needed. Tell our AI guide what’s slowing you down. Find the possibilities, then talk them through with our team.</p><div className="conversation-human"><span className="status-dot" /><span>AI TO EXPLORE.<br /><strong>REAL PEOPLE TO BUILD IT.</strong></span><Button to="/contact">Book a discovery call</Button></div></div><div className="conversation-console"><AssistantPanel /></div></div></section>;
 }
 
 export function AssistantWidget() {
-  const { open, setOpen, inlineVisible } = useAssistant();
-  const location = useLocation();
-  const dialog = useRef<HTMLDialogElement>(null);
-  useEffect(() => { setOpen(false); }, [location.pathname, location.hash, setOpen]);
-  useEffect(() => { if (open && !dialog.current?.open) dialog.current?.showModal(); else if (!open && dialog.current?.open) dialog.current.close(); }, [open]);
-  return <><button className={`assistant-launcher ${inlineVisible ? 'launcher-hidden' : ''}`} aria-label="Open Moki AI chat" aria-haspopup="dialog" onClick={() => setOpen(true)}><MessageCircle size={21} /><span>Ask Moki</span><span className="status-dot" /></button><dialog className="assistant-dialog" ref={dialog} aria-label="Moki AI assistant" onCancel={() => setOpen(false)} onClose={() => setOpen(false)} onClick={event => { if (event.target === event.currentTarget) setOpen(false); }}><div className="assistant-dialog-shell"><button className="assistant-close" onClick={() => setOpen(false)} aria-label="Close Moki AI chat"><X size={20} /></button>{open && <AssistantPanel compact />}</div></dialog></>;
+  const { open, setOpen } = useAssistant();
+  return <ConciergeWidget open={open} onOpenChange={setOpen}>{active => open && <AssistantPanel compact active={active} />}</ConciergeWidget>;
 }

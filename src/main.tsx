@@ -12,6 +12,7 @@ import './chapters.css';
 import './mobile.css';
 import './theme.css';
 import './responsive.css';
+import './concierge.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><ThemeProvider><BrowserRouter><App /></BrowserRouter></ThemeProvider></React.StrictMode>,
