@@ -1,0 +1,58 @@
+.lead-form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 22px; min-width: 0; }
+.lead-form fieldset:disabled { opacity: .75; }
+.lead-form fieldset .form-two { margin: 0; }
+.lead-form .form-privacy { display: flex; align-items: flex-start; gap: 8px; line-height: 1.7; }
+.lead-form .form-privacy svg { margin-top: 3px; }
+.lead-form .form-privacy a { text-decoration: underline; text-underline-offset: 3px; }
+.lead-form-wrap .lead-result { margin-top: 24px; outline-offset: 5px; }
+.lead-result details { margin-top: 20px; border-block: 1px solid var(--line); }
+.lead-result summary { cursor: pointer; padding-block: 14px; font-size: 14px; color: var(--ink); min-height: 44px; }
+.lead-result details pre { margin-top: 0; font-size: 13px; }
+.lead-result .lead-email-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.lead-result .lead-email-note { font-size: 12px; color: var(--copy); margin-top: 16px; }
+.lead-result .copy-button { min-height: 44px; }
+.lead-saved .email-preview-heading svg { color: var(--blue); }
+.lead-spinner { animation: lead-spin 1s linear infinite; }
+.demo-dialog { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 22px; width: min(640px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 48px); padding: 0; box-shadow: 0 28px 100px #0a204638; overflow: hidden; }
+.demo-dialog::backdrop { background: #07152b85; }
+.demo-shell { padding: 34px 38px; max-height: calc(100dvh - 50px); overflow-y: auto; overscroll-behavior: contain; }
+.demo-close { position: absolute; right: 16px; top: 16px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--control); color: var(--ink); z-index: 1; }
+.demo-close:hover { background: var(--tint); }
+.demo-heading { padding-right: 20px; }
+.demo-kicker { display: flex; gap: 8px; align-items: center; font-size: 10px; letter-spacing: 1.3px; color: var(--blue); padding-right: 24px; }
+.demo-heading h2 { font-size: clamp(38px, 5vw, 52px); line-height: .98; margin: 20px 0 16px; letter-spacing: -.6px; }
+.demo-heading h2 span { color: var(--blue); }
+.demo-heading > p { font-size: 14px; line-height: 1.7; color: var(--copy); max-width: 440px; }
+.demo-benefits { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 18px 0 26px; color: var(--copy); font-size: 12px; }
+.demo-benefits > span { display: inline-flex; align-items: center; gap: 6px; }
+.demo-benefits svg { color: var(--blue); }
+.demo-dialog .lead-form { gap: 18px; }
+.demo-dialog .lead-form fieldset { gap: 17px; }
+.demo-dialog .form-two { grid-template-columns: 1fr 1fr; gap: 16px; }
+.demo-dialog .lead-form label { color: var(--ink); font-size: 12px; margin-bottom: 8px; }
+.demo-dialog .lead-form input, .demo-dialog .lead-form select, .demo-dialog .lead-form textarea { font-size: 16px; background: var(--control); color: var(--ink); border-color: var(--line); padding: 12px 14px; min-height: 46px; border-radius: 8px; }
+.demo-dialog .lead-form input::placeholder, .demo-dialog .lead-form textarea::placeholder { color: var(--quiet); }
+.demo-dialog .lead-form .form-submit { min-height: 52px; padding: 16px 20px; font-size: 14px; border-radius: 8px; }
+.demo-dialog .lead-form .form-privacy { font-size: 11px; margin: 0; }
+.demo-dialog .lead-result { background: var(--surface); border: 1px solid var(--line); padding: 22px; border-radius: 12px; }
+.demo-dialog .lead-result h3 { font-size: 29px; line-height: 1.1; color: var(--ink); }
+.demo-dialog .lead-result p { font-size: 13px; line-height: 1.7; color: var(--copy); }
+.demo-dialog .lead-result pre { background: var(--control); color: var(--ink); border-color: var(--line); }
+.demo-dialog .copy-button { color: var(--ink); }
+.demo-dialog .form-error { font-size: 13px; line-height: 1.6; color: #bd3340; }
+:root[data-theme="dark"] .demo-dialog .form-error { color: #ffacb6; }
+.demo-footer-button { margin-top: 16px; background: transparent; color: var(--blue); padding: 8px 0; display: flex; width: fit-content; align-items: center; gap: 12px; min-height: 44px; font-size: 14px; }
+.demo-menu-button { margin-top: 20px; padding: 18px; width: 100%; display: flex; align-items: center; justify-content: space-between; border-radius: 10px; background: #2458cf; color: #fff; font-size: 16px; font-weight: 600; text-align: left; }
+@keyframes lead-spin { to { transform: rotate(360deg); } }
+@media (max-width: 600px) {
+  .demo-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 18px; }
+  .demo-shell { padding: 28px 22px; }
+  .demo-shell { max-height: calc(100dvh - 26px); }
+  .demo-heading { padding-right: 0; }
+  .demo-kicker { max-width: calc(100% - 34px); font-size: 9px; letter-spacing: .6px; line-height: 1.6; padding-right: 0; }
+  .demo-heading h2 { font-size: 42px; margin-top: 24px; }
+  .demo-dialog .form-two { grid-template-columns: 1fr; gap: 17px; }
+  .demo-dialog .lead-result { padding: 18px; }
+  .demo-dialog .lead-email-actions > .button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .lead-spinner { animation: none; } }

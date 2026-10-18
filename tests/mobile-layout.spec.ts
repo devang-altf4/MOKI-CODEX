@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 const sizes = [{width:320,height:568},{width:375,height:667},{width:390,height:844},{width:844,height:390}];
 const overlaps = (a: {x:number;y:number;width:number;height:number}, b: {x:number;y:number;width:number;height:number}) => a.x < b.x+b.width && a.x+a.width > b.x && a.y < b.y+b.height && a.y+a.height > b.y;
 
@@ -18,9 +21,13 @@ for (const viewport of sizes) {
       expect(art.y).toBeGreaterThanOrEqual(actions.y+actions.height-1);
       expect(art.height).toBeGreaterThan(100);
     }
-    const launcher = (await page.getByRole('button',{name:'Open Moki AI chat',exact:true}).boundingBox())!;
+    const launcher = (await page.getByRole('button',{name:'Open Moki chat and contact',exact:true}).boundingBox())!;
     expect(overlaps((await page.locator('.hero-actions').boundingBox())!,launcher)).toBeFalsy();
-    expect(overlaps((await page.getByRole('button',{name:'Switch to dark mode'}).boundingBox())!,(await page.locator('.nav-cta').boundingBox())!)).toBeFalsy();
+    const themeButton=(await page.getByRole('button',{name:'Switch to dark mode'}).boundingBox())!;
+    const menuButton=(await page.getByRole('button',{name:'Open navigation',exact:true}).boundingBox())!;
+    expect(overlaps(themeButton,menuButton)).toBeFalsy();
+    if(viewport.width<=600) await expect(page.locator('.nav-cta')).toBeHidden();
+    else expect(overlaps(themeButton,(await page.locator('.nav-cta').boundingBox())!)).toBeFalsy();
     await page.screenshot({path:`artifacts/mobile-fixed-home-${viewport.width}.png`});
 
     const method=page.locator('#method');
@@ -87,15 +94,16 @@ test('phone navigation pages, menu, chat and consultation form remain usable', a
   await page.goto('/contact');
   await expect(page.getByLabel('Your name')).toHaveCSS('font-size','16px');
   await expect(page.getByLabel('Work email')).toHaveCSS('font-size','16px');
-  await page.getByRole('button',{name:'Open Moki AI chat',exact:true}).click();
-  const dialog=page.getByRole('dialog',{name:'Moki AI assistant'});
+  await page.getByRole('button',{name:'Open Moki chat and contact',exact:true}).click();
+  const dialog=page.getByRole('dialog',{name:'Moki chat and contact'});
   await expect(dialog).toBeVisible();
+  await dialog.getByRole('button',{name:'AI chat',exact:true}).click();
   const box=(await dialog.boundingBox())!;
   expect(box.y).toBeGreaterThanOrEqual(0);
   expect(box.y+box.height).toBeLessThanOrEqual(667);
   await expect(dialog.getByLabel('Your message to Moki AI')).toHaveCSS('font-size','16px');
   await page.screenshot({path:'artifacts/mobile-fixed-chat.png'});
-  await dialog.getByRole('button',{name:'Close Moki AI chat'}).click();
+  await dialog.getByRole('button',{name:'Close Moki chat and contact'}).click();
   expect(errors).toEqual([]);
 });
 

@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('embedded AI conversation sends history, suggests a service, and can be reset', async ({ page }) => {
   const requests: { messages: { role: string; text: string }[] }[] = [];
   await page.route('**/api/chat', async route => {
@@ -48,9 +51,10 @@ test('mobile chat opens accessibly, treats replies as text, and closes on a serv
   const text = 'A website could help. <img src=x onerror="alert(1)">';
   await page.route('**/api/chat', route => route.fulfill({ json: { reply: text, service: 'web-development' } }));
   await page.goto('/');
-  await page.getByRole('button', { name: 'Open Moki AI chat' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Moki AI assistant' });
+  await page.getByRole('button', { name: 'Open Moki chat and contact' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Moki chat and contact' });
   await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'AI chat', exact: true }).click();
   await dialog.getByLabel('Your message to Moki AI').fill('We are considering a new website.');
   await dialog.getByRole('button', { name: 'Send message to Moki AI' }).click();
   await expect(dialog.locator('.message-assistant').last()).toContainText(text);

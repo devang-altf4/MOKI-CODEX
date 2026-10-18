@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
+
 test('light is the first visit default; the accessible switch remembers a choice across routes and reloads', async ({ page }) => {
   test.setTimeout(60000);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -55,9 +58,9 @@ for (const width of [320, 390, 768, 1440]) {
         await page.getByRole('button', {name:'Close navigation'}).click();
       }
       await page.screenshot({path:`artifacts/theme-${theme}-home-${width}.png`});
-      await page.getByRole('button', {name:'Open Moki AI chat',exact:true}).click();
+      await page.getByRole('button', {name:'Open Moki chat and contact',exact:true}).click();
       await expect(page.getByRole('dialog')).toBeVisible();
-      await page.getByRole('button', {name:'Close Moki AI chat',exact:true}).click();
+      await page.getByRole('button', {name:'Close Moki chat and contact',exact:true}).click();
       for (const path of ['/solutions','/how-it-works','/industries','/about','/contact','/privacy']) {
         await page.goto(path);
         await expect(page.locator('html')).toHaveAttribute('data-theme',theme);

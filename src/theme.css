@@ -160,7 +160,7 @@ body { background: var(--bg); color: var(--ink); }
   .footer-links > a:hover, .footer-contact > a:first-of-type { color: #2458cf; }
   .footer-bottom { border-color: var(--line); }
   .footer-bottom > button { color: #2458cf; border-color: #b5c9e9; }
-  .footer-word, .footer-word > span { -webkit-text-stroke-color: #c6d6f0; }
+
 
   .cinematic-intro { background: #ffffff; }
   .cinematic-intro::before { background: radial-gradient(ellipse at 70% 47%,var(--wash),transparent 65%); }
