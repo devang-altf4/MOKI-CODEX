@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowDown } from 'lucide-react';
 import { framework } from '../content';
 import { Eyebrow } from './Primitives';
 import MethodStage from './MethodStage';
@@ -106,7 +105,7 @@ export default function Framework() {
     <div className="method-scene"><div className="method-grain" aria-hidden="true" /><MethodStage reduced={reduced} active={active} onRenderer={register} /><div className="method-vignette" aria-hidden="true" />
       <div className="method-scene-top container"><Eyebrow>FROM DISCONNECTED TO IN SYNC</Eyebrow><span className="mono">THE MOKI METHOD / 0{active + 1}</span></div>
       <div className="method-scene-title container"><h2><span>{headlines[active][0]}</span><em>{headlines[active][1]}</em></h2></div><div className="method-big-number" aria-hidden="true">0{active + 1}</div>
-      <div className="method-scene-bottom container"><div className="method-scene-copy"><span className="mono">0{active + 1} — {item.name.toUpperCase()}</span><h3>{item.headline}</h3><p>{item.body}</p></div>{!reduced && <div className="method-scroll-cue"><span className="scroll-cue-line" /><ArrowDown size={18} /><span>YOUR SCROLL.<br />EVERYTHING COMES TOGETHER.</span></div>}</div>
+      <div className="method-scene-bottom container"><div className="method-scene-copy"><span className="mono">0{active + 1} — {item.name.toUpperCase()}</span><h3>{item.headline}</h3><p>{item.body}</p></div></div>
       <div className="method-chapter-nav container"><div className="method-tabs" role="group" aria-label="Explore framework stages">{framework.map((stage, index) => <button key={stage.letter} aria-label={stage.name} className={active === index ? 'active' : ''} aria-pressed={active === index} onClick={() => select(index)}><span>0{index + 1}</span><small>{stage.name}</small><span className="chapter-track"><i /></span></button>)}</div><span className="method-progress-label mono">0%</span></div>
     </div>
   </section>;

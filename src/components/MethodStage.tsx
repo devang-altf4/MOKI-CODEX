@@ -10,7 +10,9 @@ export default function MethodStage({ reduced, active, onRenderer }: { reduced: 
   const [near, setNear] = useState(false), [ready, setReady] = useState(false);
   const [Scene, setScene] = useState<ComponentType<{ onRenderer: (renderer: MethodRenderer) => void }> | null>(null);
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setNear(true); observer.disconnect(); } }, { rootMargin: '1000px' });
+    // Avoid compiling the next 3D scene during the opening phone transition.
+    const compact = matchMedia('(max-width: 700px), (max-width: 960px) and (max-height: 500px)').matches;
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setNear(true); observer.disconnect(); } }, { rootMargin: compact ? '160px' : '1000px' });
     observer.observe(root.current!);
     return () => observer.disconnect();
   }, []);

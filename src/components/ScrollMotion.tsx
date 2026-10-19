@@ -10,29 +10,31 @@ export function useHeroScroll(root: RefObject<HTMLElement | null>) {
     const element = root.current;
     if (!element) return;
     const media = gsap.matchMedia();
-    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px)' }, context => {
+    media.add({ motion: '(prefers-reduced-motion: no-preference)', compact: '(max-width: 700px), (max-width: 960px) and (max-height: 500px)' }, context => {
       if (!context.conditions?.motion) return;
+      const small = Boolean(context.conditions?.compact);
       const q = gsap.utils.selector(element);
       const timeline = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
           trigger: element, start: 'top top', end: 'bottom bottom', scrub: .55,
           invalidateOnRefresh: true,
-          onUpdate: self => { element.dataset.scrollProgress = self.progress.toFixed(3); },
         },
       });
-      timeline.to(q('.hero-copy'), { y: -130, x: () => innerWidth > 900 ? -100 : 0, autoAlpha: 0, duration: .38 }, 0)
+      timeline.to(q('.hero-copy'), { y: small ? -40 : -130, x: () => innerWidth > 900 ? -100 : 0, autoAlpha: 0, duration: .38 }, 0)
         .to(q('.hero-art'), {
-          x: () => innerWidth > 900 ? -innerWidth * .23 : 0,
-          y: () => innerWidth > 900 ? -innerHeight * .035 : -innerHeight * .18,
-          scale: () => innerWidth > 900 ? 1.48 : 1.3, rotation: () => innerWidth > 900 ? -8 : -4, duration: .85,
+          x: () => !small && innerWidth > 900 ? -innerWidth * .23 : 0,
+          y: () => {
+            const height = q('.hero-pin')[0].clientHeight;
+            if (small) return -height * (height <= 650 ? .38 : .23);
+            return innerWidth > 900 ? -innerHeight * .035 : -innerHeight * .18;
+          },
+          scale: () => small ? 1.08 : innerWidth > 900 ? 1.48 : 1.3,
+          rotation: () => small ? 0 : innerWidth > 900 ? -8 : -4, force3D: true, duration: small ? .95 : .85,
         }, 0)
-        .to(q('.hero-interface'), { autoAlpha: 0, y: 24, duration: .16 }, 0)
-        .to(q('.hero-halo'), { scale: 1.8, opacity: .85, duration: 1 }, 0)
-        .fromTo(q('.hero-next'), { y: 100, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32 }, .55)
-        .fromTo(q('.hero-orbit-word'), { xPercent: 30, opacity: 0 }, { xPercent: -8, opacity: .1, duration: .7 }, .2)
-        .to(q('.hero-scroll-fill'), { scaleX: 1, duration: 1 }, 0);
-      return () => { delete element.dataset.scrollProgress; };
+        .fromTo(q('.hero-next'), { y: small ? 24 : 100, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: small ? .27 : .32 }, small ? .58 : .55);
+      // Phones move one video surface; large blended decoration stays on desktop.
+      if (!small) timeline.to(q('.hero-halo'), { scale: 1.8, opacity: .85, duration: 1 }, 0);
     });
     // Fonts can change the height of the opening copy after the first paint.
     let disposed = false;

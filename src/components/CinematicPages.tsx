@@ -32,8 +32,7 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
       tl.to(q('.inner-visual'), { y: small ? -25 : -130, scale: small ? 1.05 : 1.26, rotation: small ? 3 : 7 }, 0)
         .to(q('.inner-intro-copy'), { y: small ? -18 : -90 }, 0)
         .to(q('.inner-orbit-word'), { xPercent: -23 }, 0)
-        .to(q('.inner-float'), { y: (i: number) => small ? -8 : (i % 2 ? -120 : 85), rotation: (i: number) => small ? 0 : (i % 2 ? -9 : 9), stagger: .03 }, 0)
-        .to(q('.inner-scroll-line i'), { scaleY: 1 }, 0);
+        .to(q('.inner-float'), { y: (i: number) => small ? -8 : (i % 2 ? -120 : 85), rotation: (i: number) => small ? 0 : (i % 2 ? -9 : 9), stagger: .03 }, 0);
       let visible = false;
       const update = () => { if (visible && document.visibilityState === 'visible') void film.play().catch(() => {}); else film.pause(); };
       const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
@@ -44,7 +43,7 @@ export function CinematicIntro({ scene, eyebrow, title, accent, description }: {
   }, [scene, filmSource]);
   return <section className={`cinematic-intro intro-${scene}`} ref={root} aria-label={eyebrow}>
     <div className="inner-orbit-word" aria-hidden="true">{config.word}</div>
-    <div className="inner-intro-copy container"><Eyebrow>{eyebrow}</Eyebrow><h1><span className="inner-title-mask"><span className="inner-title-line">{title}</span></span><span className="inner-title-mask"><em className="inner-title-line">{accent}</em></span></h1><p>{description}</p><a className="inner-scroll-link" href={`#${scene}-content`}><span className="inner-scroll-line"><i /></span>SCROLL TO EXPLORE</a></div>
+    <div className="inner-intro-copy container"><Eyebrow>{eyebrow}</Eyebrow><h1><span className="inner-title-mask"><span className="inner-title-line">{title}</span></span><span className="inner-title-mask"><em className="inner-title-line">{accent}</em></span></h1><p>{description}</p></div>
     <div className="inner-visual" aria-hidden="true"><div className="inner-visual-tilt"><img src={poster} alt="" fetchPriority="high" /><video ref={video} src={filmSource} poster={poster} muted playsInline loop={!config.clip} preload="metadata" /></div>{config.labels.map((label, index) => <div className={`inner-float inner-float-${index}`} key={label}><span>0{index + 1}</span>{label}</div>)}</div>
     <div className="inner-intro-meta container"><span>{config.caption}</span><span>EXPLORE MOKI / {config.number}</span></div>
   </section>;

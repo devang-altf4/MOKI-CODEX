@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, BrainCircuit, BriefcaseBusiness, Building2, CalendarDays, Check, CheckCircle2, ChevronRight, Factory, Globe2, Layers3, Mail, MapPin, Menu, MessageSquare, Search, ShieldCheck, Sparkles, UsersRound, Workflow, Wrench, X, ChartNoAxesCombined, PanelTop, Megaphone, Rocket } from 'lucide-react';
+import { ArrowDown, ArrowUp, BrainCircuit, BriefcaseBusiness, Building2, CalendarDays, Check, CheckCircle2, ChevronRight, Factory, Layers3, Mail, MapPin, Menu, MessageSquare, Search, ShieldCheck, Sparkles, UsersRound, Workflow, Wrench, X, ChartNoAxesCombined, PanelTop, Megaphone, Rocket } from 'lucide-react';
 import gsap from 'gsap';
 import { challenges, EMAIL, faqs, framework, industries, services } from './content';
 import Logo from './components/Logo';
@@ -58,7 +58,7 @@ function Navigation() {
 }
 
 function CinematicFilm() {
-  const { film, poster } = useMokiArtwork();
+  const { film, poster } = useMokiArtwork({ responsive: true });
   const video = useRef<HTMLVideoElement>(null);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -86,10 +86,9 @@ function Hero() {
   }, []);
   return <section className="hero-scroll-track" ref={hero}><div className="hero hero-pin">
     <div className="hero-grid" aria-hidden="true" />
-    <div className="hero-halo" aria-hidden="true" /><div className="hero-orbit-word" aria-hidden="true">CONNECTED</div>
+    <div className="hero-halo" aria-hidden="true" />
     <div className="container hero-layout">
       <div className="hero-copy">
-        <div className="hero-eyebrow hero-after"><span className="status-dot" />AI & AUTOMATION. BUILT AROUND YOU.</div>
         <h1 className="hero-title"><span>Less busywork.</span><span>More <em>business.</em></span></h1>
         <p className="hero-description hero-after"><span className="hero-description-full">We put AI to work, automate the repetitive,<br className="desktop-break" /> and connect your tools. So your business<br className="desktop-break" /> moves forward, together.</span><span className="hero-description-compact">We put AI to work and connect your tools, so your business moves forward.</span></p>
         <div className="hero-actions hero-after"><Button to="/contact">Book a free discovery call</Button></div>
@@ -98,9 +97,7 @@ function Hero() {
         <CinematicFilm />
       </div>
     </div>
-    <div className="hero-next container"><span className="mono">YOUR TOOLS. YOUR TEAM. YOUR NEXT CHAPTER.</span><h2>One connected<br /><em>business.</em></h2><p>From scattered tasks to a system that moves with you.</p></div>
-    <div className="container hero-bottom hero-interface"><span>AI · AUTOMATION · WEBSITES & SEO</span><span><Globe2 size={12} />SOUTH FLORIDA → EVERYWHERE</span></div>
-    <div className="hero-scroll-progress" aria-hidden="true"><span className="hero-scroll-fill" /></div>
+    <div className="hero-next container"><h2>One connected<br /><em>business.</em></h2><p>From scattered tasks to a system that moves with you.</p></div>
   </div></section>;
 }
 

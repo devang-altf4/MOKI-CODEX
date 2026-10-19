@@ -4,8 +4,8 @@ import { CalendarDays, Home, Mail, MessageCircle, Pause, Play, Sparkles, UsersRo
 import { EMAIL } from '../content';
 import Logo from './Logo';
 
-const welcomeFilm = '/videos/concierge/moki-welcome-woman.mp4';
-const welcomePoster = '/images/concierge/moki-welcome-woman.webp';
+const welcomeFilm = '/videos/concierge/moki-welcome-woman-wide.mp4';
+const welcomePoster = '/images/concierge/moki-welcome-woman-wide.webp';
 
 function WelcomeMedia({ active, paused = false }: { active: boolean; paused?: boolean }) {
   const video = useRef<HTMLVideoElement>(null);
@@ -70,7 +70,7 @@ export function ConciergeWidget({ open, onOpenChange, children }: { open: boolea
         <nav className="concierge-tabs" aria-label="Moki contact options">{([['welcome', Home, 'Welcome'], ['ai', Sparkles, 'AI chat'], ['team', UsersRound, 'Our team']] as const).map(([key, Icon, label]) => <button key={key} aria-pressed={view === key} aria-controls={`concierge-${key}`} onClick={() => setView(key)}><Icon size={16} />{label}</button>)}</nav>
         <div className="concierge-body" ref={body}>
           <div id="concierge-welcome" className="concierge-view" hidden={view !== 'welcome'}>
-            <div className="concierge-welcome-film"><WelcomeMedia active={view === 'welcome'} paused={videoPaused} /><span className="concierge-film-tag">WELCOME VIDEO</span><div className="concierge-film-copy"><h3>Big ideas.<br />Start here.</h3><span>Welcome to MOKI.</span></div><button className="concierge-video-toggle" aria-label={videoPaused ? 'Play greeting' : 'Pause greeting'} onClick={() => setVideoPaused(!videoPaused)}>{videoPaused ? <Play size={15} /> : <Pause size={15} />}</button></div>
+            <div className="concierge-welcome-film"><WelcomeMedia active={view === 'welcome'} paused={videoPaused} /><button className="concierge-video-toggle" aria-label={videoPaused ? 'Play greeting' : 'Pause greeting'} onClick={() => setVideoPaused(!videoPaused)}>{videoPaused ? <Play size={15} /> : <Pause size={15} />}</button></div>
             <div className="concierge-welcome-copy"><h3>What’s on your mind?</h3><p>A question, an idea, or a process that could work better. Let’s find your next step.</p></div>
             <div className="concierge-choices"><button className="concierge-choice" onClick={() => setView('ai')}><span className="concierge-choice-icon"><Sparkles size={20} /></span><span><strong>Ask MOKI AI</strong><small>Explore ideas for your business</small></span></button><button className="concierge-choice" onClick={() => setView('team')}><span className="concierge-choice-icon"><UsersRound size={20} /></span><span><strong>Talk to our team</strong><small>Let’s turn an idea into a plan</small></span></button></div>
           </div>

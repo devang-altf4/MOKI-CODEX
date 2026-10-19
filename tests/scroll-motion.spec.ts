@@ -14,9 +14,10 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 634, height: 700 
     const art = page.locator('.hero-art');
     const initial = await art.boundingBox();
 
-    // Ordinary wheel input should enlarge the scene while its viewport stays pinned.
+    // Phones move the scene upward without the large desktop zoom.
     await page.mouse.wheel(0, viewport.height * .55);
-    await expect.poll(async () => (await art.boundingBox())!.width).toBeGreaterThan(initial!.width * 1.2);
+    if (viewport.width <= 700) await expect.poll(async () => initial!.y - (await art.boundingBox())!.y).toBeGreaterThan(40);
+    else await expect.poll(async () => (await art.boundingBox())!.width).toBeGreaterThan(initial!.width * 1.2);
     await expect.poll(() => page.locator('.hero-pin').evaluate(el => Math.abs(el.getBoundingClientRect().top))).toBeLessThan(1);
     const remainingTravel = await page.locator('.hero-scroll-track').evaluate(el => (el.clientHeight - innerHeight) * .94 - scrollY);
     await page.mouse.wheel(0, remainingTravel);

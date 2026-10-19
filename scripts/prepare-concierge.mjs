@@ -3,15 +3,16 @@ import { promisify } from 'node:util';
 import { mkdir } from 'node:fs/promises';
 
 const run = promisify(execFile);
-const name = 'moki-welcome-woman';
+const name = 'moki-welcome-woman-wide';
 const source = `assets-src/concierge/${name}.mp4`;
 const film = `public/videos/concierge/${name}.mp4`;
 const poster = `public/images/concierge/${name}.webp`;
 await mkdir('public/videos/concierge', { recursive: true });
 await mkdir('public/images/concierge', { recursive: true });
-// A small card needs no more than 720px. Keep the source frame timing and colour;
+// Keep the wide welcome sharp while decoding the same pixel count as the old portrait clip.
+// Preserve the source frame timing and colour;
 // remove the audio so a decorative greeting cannot play unexpected sound.
-await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', source, '-map', '0:v:0', '-an', '-vf', 'scale=min(720\\,iw):-2:flags=lanczos', '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-threads', '2', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', film]);
+await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', source, '-map', '0:v:0', '-an', '-vf', 'scale=min(1280\\,iw):-2:flags=lanczos', '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-threads', '2', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', film]);
 await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-ss', '0.2', '-i', film, '-frames:v', '1', '-quality', '92', '-threads', '1', poster]);
 const probe = async path => JSON.parse((await run('ffprobe', ['-v', 'error', '-show_entries', 'stream=codec_type,width,height,r_frame_rate,nb_frames,duration', '-show_entries', 'format=size', '-of', 'json', path])).stdout);
 const original = await probe(source), output = await probe(film);

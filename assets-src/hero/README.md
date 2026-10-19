@@ -4,6 +4,18 @@ The approved light-mode Flow clip supplied on 17 October 2026 is saved as `moki-
 
 Run `npm run prepare:light-hero` to copy its video stream into the public light-mode MP4 without re-encoding or colour conversion, remove audio, enable fast-start playback, and create a matching WebP poster. Run `npm run verify:light-hero` to check that every decoded public frame exactly matches this source. The dark media below remains separate.
 
+## Phone hero variants
+
+Run `npm run prepare:mobile-hero` to prepare separate 1280x720 H.264 clips and
+matching posters for both themes. The source files above remain intact. The
+smaller clips preserve all 240 frames, 24 fps, and the ten-second duration;
+they remove audio and need no runtime colour filters. Decoding uses 56% fewer
+pixels than 1920x1080. Desktop and About keep the full-HD media.
+
+The phone hero uses translation with a small scale change, static edge fades,
+and normal video compositing. The next 3D scene loads closer to its entrance
+so its setup does not compete with the opening transition.
+
 ## Original dark artwork prompts
 
 The website is being built with existing assets and live 3D. These new media are optional; you do not need to wait for them to preview the website.
