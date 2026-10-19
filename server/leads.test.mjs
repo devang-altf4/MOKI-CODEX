@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { createLeadsHandler } from './leads.mjs';
 
-const enquiry = () => ({ name: ' Preview Tester ', email: 'TESTER@example.com', company: 'Example Business', challenge: 'We would like a clearer website and an easier enquiry process.', service: 'web-development', website: '', source: 'demo-popup', page: '/', requestId: randomUUID() });
+const enquiry = () => ({ name: ' Preview Tester ', email: 'TESTER@example.com', company: 'Example Business', challenge: 'We would like a clearer website and an easier enquiry process.', services: ['web-development'], website: '', source: 'demo-popup', page: '/', requestId: randomUUID() });
 const config = { MONGODB_URI: 'mongodb://private-test-credential', MONGODB_DATABASE: 'moki_test' };
 function fixture(options = {}) {
   const calls = [], records = new Map();
@@ -34,6 +34,7 @@ test('saves only validated fields and confirms the database result without expos
   assert.deepEqual(response.body, { saved: true, reference: input.requestId });
   assert.equal(calls[0].name, 'Preview Tester');
   assert.equal(calls[0].email, 'tester@example.com');
+  assert.deepEqual(calls[0].services, ['web-development']);
   assert.equal(calls[0].isAdmin, undefined);
   assert.equal(calls[0].arbitrary, undefined);
   assert.equal(calls[0].website, undefined);
@@ -54,9 +55,45 @@ test('retrying a successful request keeps one record; reusing its ID with change
 
 test('rejects invalid and injected fields before accessing storage', async () => {
   const { request, calls } = fixture();
-  for (const changes of [{ name: '' }, { email: 'wrong' }, { company: { $gt: '' } }, { challenge: 'short' }, { challenge: 'a'.repeat(4001) }, { service: 'unknown' }, { requestId: 'invalid' }, { source: 'untrusted' }, { page: '/?email=private' }, { website: 'https://spam.test' }]) {
+  for (const changes of [{ name: '' }, { email: 'wrong' }, { company: { $gt: '' } }, { challenge: 'short' }, { challenge: 'a'.repeat(4001) }, { services: ['unknown'] }, { requestId: 'invalid' }, { source: 'untrusted' }, { page: '/?email=private' }, { website: 'https://spam.test' }]) {
     assert.equal((await request({ ...enquiry(), ...changes })).status, 400);
   }
+  assert.equal(calls.length, 0);
+});
+
+test('saves every selected service and normalizes repeated or reordered choices for safe retries', async () => {
+  const { request, calls, records } = fixture();
+  const input = { ...enquiry(), services: ['web-development', 'seo', 'workflow-automation', 'seo'] };
+  assert.equal((await request(input)).status, 200);
+  assert.deepEqual(calls[0].services, ['seo', 'web-development', 'workflow-automation']);
+  assert.equal((await request({ ...input, services: ['workflow-automation', 'web-development', 'seo'] })).status, 200);
+  assert.equal(records.size, 1);
+  assert.equal((await request({ ...input, services: ['seo'] })).status, 409);
+  assert.equal(records.size, 1);
+});
+
+test('accepts undecided enquiries and older single-service browser forms', async () => {
+  const { request, calls } = fixture();
+  assert.equal((await request({ ...enquiry(), services: [] })).status, 200);
+  assert.deepEqual(calls[0].services, []);
+  for (const service of ['web-development', '']) {
+    const input = enquiry();
+    delete input.services;
+    input.service = service;
+    assert.equal((await request(input)).status, 200);
+    assert.deepEqual(calls.at(-1).services, service ? [service] : []);
+  }
+});
+
+test('rejects malformed service lists before saving any enquiry', async () => {
+  const { request, calls } = fixture();
+  for (const selected of [null, 'seo', { $in: ['seo'] }, [null], [{}], [1], [''], ['seo', 'unknown'], Array(10).fill('seo')]) {
+    assert.equal((await request({ ...enquiry(), services: selected })).status, 400);
+  }
+  const legacy = enquiry();
+  delete legacy.services;
+  legacy.service = 'unknown';
+  assert.equal((await request(legacy)).status, 400);
   assert.equal(calls.length, 0);
 });
 

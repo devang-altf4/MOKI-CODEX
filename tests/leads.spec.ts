@@ -1,23 +1,50 @@
 import { expect, test } from '@playwright/test';
 
-test('demo invitation appears after eight seconds and only once per visit', async ({ page }) => {
+test('demo invitation opens only on request, including after a fresh visit and dismissal', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.clock.install();
   await page.goto('/');
   const popup = page.getByRole('dialog', { name: 'Your business. Its next possibility.' });
   await expect(popup).toBeHidden();
-  await page.clock.runFor(7900);
-  await expect(popup).toBeHidden();
-  await page.clock.runFor(200);
-  await expect(popup).toBeVisible();
-  await page.getByRole('button', { name: 'Close demo request' }).press('Escape');
+  await page.clock.runFor(30_000);
   await expect(popup).toBeHidden();
   await page.reload();
   await page.clock.runFor(8500);
   await expect(popup).toBeHidden();
   await page.locator('.site-header').getByRole('button', { name: 'Request a demo', exact: true }).click();
   await expect(popup).toBeVisible();
+  await page.getByRole('button', { name: 'Close demo request' }).press('Escape');
+  await page.clock.runFor(30_000);
+  await expect(popup).toBeHidden();
+  await page.locator('.site-header').getByRole('button', { name: 'Request a demo', exact: true }).click();
+  await expect(popup).toBeVisible();
   await expect(page.locator('.footer-word')).toHaveCount(0);
+});
+
+test('demo request sends all checked services and includes them in the email draft', async ({ page }) => {
+  const submissions: { services: string[] }[] = [];
+  await page.route('**/api/leads', async route => {
+    submissions.push(route.request().postDataJSON());
+    await route.fulfill({ json: { saved: true } });
+  });
+  await page.goto('/');
+  await page.locator('.site-header').getByRole('button', { name: 'Request a demo', exact: true }).click();
+  const popup = page.getByRole('dialog', { name: 'Your business. Its next possibility.' });
+  await popup.getByRole('checkbox', { name: 'Workflow automation', exact: true }).check();
+  await popup.getByRole('checkbox', { name: 'Website development', exact: true }).check();
+  await popup.getByRole('checkbox', { name: 'Search engine optimization', exact: true }).check();
+  await popup.getByRole('checkbox', { name: 'Search engine optimization', exact: true }).uncheck();
+  await popup.getByLabel('Your name').fill('Preview Tester');
+  await popup.getByLabel('Work email').fill('tester@example.com');
+  await popup.getByLabel('Business name').fill('Example Business');
+  await popup.getByLabel('What could work better?').fill('We would like a clearer website and simpler business workflows.');
+  await popup.getByRole('button', { name: 'Request my free demo' }).click();
+  await expect(popup.getByRole('heading', { name: 'Your request is saved.' })).toBeVisible();
+  expect(submissions).toHaveLength(1);
+  expect(submissions[0].services).toEqual(['workflow-automation', 'web-development']);
+  const draft = decodeURIComponent(await popup.getByRole('link', { name: 'Open email app' }).getAttribute('href') || '');
+  expect(draft).toContain('Interested in: Workflow automation, Website development');
+  expect(draft).not.toContain('Search engine optimization');
 });
 
 test('a failed save keeps the email option and retries the same ID before showing success', async ({ page }) => {

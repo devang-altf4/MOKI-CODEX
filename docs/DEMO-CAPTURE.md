@@ -5,12 +5,14 @@ Configure and verify the hosted MongoDB connection before promoting the release.
 
 ## Visitor flow
 
-- The invitation appears after eight seconds, once per browser-tab session. It
-  waits while a contact panel, phone menu, or text input is active, and does not
-  interrupt the contact, privacy, or typography pages.
+- The invitation opens only when the visitor clicks Request a demo. There is no
+  automatic timer, repeat invitation, or popup session flag.
 - Desktop navigation, the phone menu, and the footer have a Request a demo button
   to reopen it. Escape, the close button, or an outside click dismisses it.
 - Both the popup and contact page save through the same `/api/leads` endpoint.
+- Visitors can check multiple services in either form. Leaving every option
+  unchecked means they would like help finding a starting point. Every chosen
+  service is included in the saved `services` array and optional email draft.
 - Success is shown only after MongoDB acknowledges the save. A saved enquiry is
   not a booking, an email delivery, or a live call.
 - The existing email draft remains available after submission. If saving fails,
@@ -32,6 +34,8 @@ in warm server processes. The collection is `moki.demo_requests` by default.
 Each document contains the enquiry fields, a request ID, an internal content
 hash for safe retries, the source/page, creation time, and `status: "new"`. It
 does not store the visitor's IP, browser fingerprint, or chat transcript.
+New enquiries use a `services` array; existing documents retain their previous
+single `service` field. The API still accepts older single-service form requests.
 
 To view entries, open Atlas **Browse Collections → moki → demo_requests**. Atlas
 stores these enquiries in MongoDB; no automatic Excel sync or email delivery
