@@ -45,15 +45,11 @@ body:has(.menu-open) .concierge-dock { visibility: hidden; }
 .concierge-ai:not([hidden]) { display: flex; flex: 1; min-height: 0; min-width: 0; }
 .concierge-ai .assistant-panel { display: flex; flex-direction: column; width: 100%; min-width: 0; }
 .concierge-view[hidden] { display: none; }
-.concierge-welcome-film { position: relative; height: 208px; margin: 16px 16px 0; border-radius: 14px; overflow: hidden; color: #fff; background: linear-gradient(135deg,#2357d0,#102c70); }
-.concierge-welcome-film > .concierge-media { left: 51%; }
+.concierge-welcome-film { position: relative; height: clamp(240px,32dvh,320px); margin: 16px 16px 0; border-radius: 14px; overflow: hidden; color: #fff; background: var(--concierge-surface); }
+.concierge-welcome-film > .concierge-media { left: 0; }
 .concierge-welcome-film .concierge-media > video, .concierge-welcome-film .concierge-media > .concierge-poster { object-position: 50% 25%; }
-.concierge-welcome-film::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#14378000 40%,#14378020 54%,transparent 69%),linear-gradient(0deg,#071b5040,transparent 50%); pointer-events: none; }
-.concierge-welcome-film .concierge-sculpture { width: 30%; margin-left: 43%; margin-bottom: 3%; }
-.concierge-film-tag { position: absolute; top: 17px; left: 19px; max-width: 40%; font-size: 8px; letter-spacing: 1.4px; line-height: 1.7; z-index: 1; }
-.concierge-film-copy { position: absolute; bottom: 19px; left: 19px; max-width: 44%; z-index: 1; }
-.concierge-film-copy h3 { font: 500 29px/1.04 'DM Sans Variable',sans-serif; letter-spacing: -1.2px; }
-.concierge-film-copy > span { display: block; color: #cedbff; font-size: 11px; margin-top: 10px; }
+.concierge-welcome-film::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg,#07173335,transparent 25%); pointer-events: none; }
+.concierge-welcome-film .concierge-sculpture { width: 38%; }
 .concierge-video-toggle { position: absolute; z-index: 2; bottom: 8px; right: 8px; border: 1px solid #ffffff50; border-radius: 50%; width: 44px; height: 44px; display: grid; place-items: center; color: #fff; background: #091c4270; }
 .concierge-welcome-copy { padding: 22px 22px 16px; }
 .concierge-welcome-copy h3 { font-size: 20px; font-weight: 500; letter-spacing: -.6px; }
@@ -116,10 +112,6 @@ body:has(.menu-open) .concierge-dock { visibility: hidden; }
   .concierge-welcome-film { height: clamp(260px,42dvh,360px); margin: 0; border-radius: 0; }
   .concierge-welcome-film > .concierge-media { left: 0; }
   .concierge-welcome-film .concierge-media > video, .concierge-welcome-film .concierge-media > .concierge-poster { object-position: 50% 25%; }
-  .concierge-welcome-film::after { background: linear-gradient(0deg,#071733e8,transparent 70%); }
-  .concierge-film-tag { max-width: none; top: 20px; left: 22px; }
-  .concierge-film-copy { max-width: calc(100% - 90px); left: 22px; bottom: 24px; }
-  .concierge-film-copy h3 { font-size: 32px; letter-spacing: -1px; }
   .concierge-welcome-copy { padding: 19px 18px 15px; }
   .concierge-choices { padding-inline: 12px; }
   .concierge-choice { padding: 13px 12px; gap: 10px; }

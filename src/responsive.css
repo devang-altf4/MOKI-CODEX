@@ -90,8 +90,7 @@ body { min-width: 0; }
   .hero-pin .hero-actions { margin-top: 18px; }
   .hero-pin .hero-actions .button { width: 100%; justify-content: space-between; font-size: 13px; min-height: 48px; }
   .hero-pin .hero-art { width: calc(100% + 40px); margin-inline: -20px; }
-  .hero-pin .cinematic-scene { mask-image: radial-gradient(ellipse at 50% 52%, #000 47%, transparent 78%); }
-  .hero-pin .cinematic-scene > img, .hero-pin .cinematic-scene > video { object-fit: cover; transform: scale(1.32); }
+  .hero-pin .cinematic-scene > img, .hero-pin .cinematic-scene > video { object-fit: cover; }
   .hero-pin .hero-bottom { font-size: 8px; height: 42px; min-height: 42px; }
   .hero-bottom > span:nth-child(2) { display: none; }
   .hero-pin .hero-next { bottom: 9%; }
@@ -201,4 +200,17 @@ body { min-width: 0; }
   .hero-pin { height: auto; min-height: 0; }
   .hero-pin .hero-layout { min-height: 690px; grid-template-rows: auto 300px; }
   .framework-reduced .method-scene { height: auto; min-height: 0; grid-template-rows: auto 260px auto auto; }
+}
+
+/* Keep the video on one composited surface during the phone scroll transition. */
+@media (max-width: 700px), (max-width: 960px) and (max-height: 500px) {
+  .site-header, .site-header.header-scrolled { backdrop-filter: none; background: var(--bg); }
+  .hero-pin .hero-grid, .hero-pin .hero-halo, .hero-pin .hero-orbit-word,
+  .hero-pin .hero-bottom { display: none; }
+  .hero-pin .hero-art { contain: layout paint; }
+  :root .hero-pin .cinematic-scene { mask-image: none; mix-blend-mode: normal; isolation: isolate; transform: translateZ(0); }
+  .hero-pin .cinematic-scene > img, .hero-pin .cinematic-scene > video { transform: none; }
+  .hero-pin .cinematic-scene > video { transition: none; }
+  .hero-pin .cinematic-scene::after { content: ''; position: absolute; inset: -1px; pointer-events: none; background: linear-gradient(180deg,var(--bg) 0%,transparent 15%,transparent 85%,var(--bg) 100%),linear-gradient(90deg,var(--bg),transparent 8%,transparent 92%,var(--bg)); }
+  .hero-pin .hero-next h2 { text-shadow: none; }
 }

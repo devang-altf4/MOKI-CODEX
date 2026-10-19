@@ -12,6 +12,7 @@
     "test:server": "node --test server/*.test.mjs",
     "prepare:chapters": "node scripts/prepare-chapters.mjs",
     "prepare:light-hero": "node scripts/prepare-light-hero.mjs",
+    "prepare:mobile-hero": "node scripts/prepare-mobile-hero.mjs",
     "verify:light-hero": "node scripts/verify-light-hero.mjs",
     "prepare:concierge": "node scripts/prepare-concierge.mjs"
   },
