@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowUpRight, Check, CheckCircle2, Copy, LoaderCircle, ShieldCheck } from 'lucide-react';
+import { Check, CheckCircle2, Copy, LoaderCircle, ShieldCheck } from 'lucide-react';
 import { EMAIL, services } from '../content';
 
 type Fields = { name: string; email: string; company: string; challenge: string; service: string; website: string };
@@ -72,14 +72,14 @@ export function LeadForm({ source, initialService = '', initialChallenge = '', o
         <div className="honeypot" aria-hidden="true"><label htmlFor={`${id}-website`}>Leave this blank</label><input id={`${id}-website`} name="company_website" value={fields.website} onChange={e => update('website', e.target.value)} tabIndex={-1} autoComplete="off" /></div>
       </fieldset>
       {error && <p className="form-error" role="alert">{error}</p>}
-      {!saved && <button type="submit" className="button button-primary form-submit" disabled={busy}>{busy ? <><LoaderCircle className="lead-spinner" size={18} /><span>Saving your request…</span></> : <><span>{draft ? 'Retry saving request' : source === 'demo-popup' ? 'Request my free demo' : 'Request my discovery call'}</span><ArrowUpRight size={18} /></>}</button>}
+      {!saved && <button type="submit" className="button button-primary form-submit" disabled={busy}>{busy ? <><LoaderCircle className="lead-spinner" size={18} /><span>Saving your request…</span></> : <><span>{draft ? 'Retry saving request' : source === 'demo-popup' ? 'Request my free demo' : 'Request my discovery call'}</span></>}</button>}
       {!saved && <p className="form-privacy"><ShieldCheck size={14} /><span>Submitting saves your details so MOKI can contact you about this request. No meeting is booked automatically. <Link to="/privacy">Privacy information</Link></span></p>}
     </form>
     {draft && <div className={`email-preview lead-result ${saved ? 'lead-saved' : ''}`} ref={result} tabIndex={-1} role="region" aria-label="Your demo request and email draft">
       {saved && <><div className="email-preview-heading"><CheckCircle2 size={22} /><h3>Your request is saved.</h3></div><p>MOKI can follow up using your details. Your call hasn’t been booked yet. You can also send the email draft below.</p></>}
       {!saved && <><h3>Your email draft is ready.</h3><p>Your database save hasn’t been confirmed. You can retry above or send this email yourself.</p></>}
       <details><summary>Review your email draft</summary><pre>{draft}</pre></details>
-      <div className="lead-email-actions"><a className="button button-primary" href={`mailto:${EMAIL}?subject=${encodeURIComponent(`Discovery call — ${fields.company.trim()}`)}&body=${encodeURIComponent(draft)}`}>Open email app<ArrowUpRight size={16} /></a><button type="button" className="copy-button" onClick={copy}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy enquiry'}</button></div>
+      <div className="lead-email-actions"><a className="button button-primary" href={`mailto:${EMAIL}?subject=${encodeURIComponent(`Discovery call — ${fields.company.trim()}`)}&body=${encodeURIComponent(draft)}`}>Open email app</a><button type="button" className="copy-button" onClick={copy}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy enquiry'}</button></div>
       <p className="lead-email-note">Opening a draft does not send an email. You choose whether to send it.</p><span className="copy-status" role="status">{copied ? 'Enquiry copied to clipboard.' : ''}</span>
     </div>}
   </div>;
