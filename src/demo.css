@@ -1,5 +1,5 @@
 .lead-form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 22px; min-width: 0; }
-.lead-form fieldset:disabled { opacity: .75; }
+.lead-form > fieldset:disabled { opacity: .75; }
 .lead-form fieldset .form-two { margin: 0; }
 .lead-form .form-privacy { display: flex; align-items: flex-start; gap: 8px; line-height: 1.7; }
 .lead-form .form-privacy svg { margin-top: 3px; }
@@ -43,6 +43,16 @@
 :root[data-theme="dark"] .demo-dialog .form-error { color: #ffacb6; }
 .demo-footer-button { margin-top: 16px; background: transparent; color: var(--blue); padding: 8px 0; display: flex; width: fit-content; align-items: center; gap: 12px; min-height: 44px; font-size: 14px; }
 .demo-menu-button { margin-top: 20px; padding: 18px; width: 100%; display: flex; align-items: center; justify-content: space-between; border-radius: 10px; background: #2458cf; color: #fff; font-size: 16px; font-weight: 600; text-align: left; }
+.lead-form .lead-service-picker { display: block; }
+.lead-service-picker legend { padding: 0; color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.5; }
+.lead-service-help { margin: 7px 0 12px; color: var(--copy); font-size: 12px; line-height: 1.6; }
+.lead-service-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.lead-form .lead-service-picker .lead-service-option { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 52px; margin: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--control); color: var(--ink); font-size: 13px; line-height: 1.45; cursor: pointer; }
+.lead-form .lead-service-picker .lead-service-option > span { margin: 0; color: inherit; overflow-wrap: anywhere; }
+.lead-form .lead-service-picker .lead-service-option.is-selected { border-color: var(--blue); background: var(--tint); }
+.lead-form .lead-service-picker .lead-service-option:hover { border-color: var(--blue); }
+.lead-form .lead-service-picker .lead-service-option:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+.lead-form .lead-service-picker .lead-service-option input { appearance: auto; flex: 0 0 18px; width: 18px; height: 18px; min-height: 18px; padding: 0; margin: 0; accent-color: var(--blue); cursor: inherit; }
 @keyframes lead-spin { to { transform: rotate(360deg); } }
 @media (max-width: 600px) {
   .demo-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 18px; }
@@ -54,5 +64,6 @@
   .demo-dialog .form-two { grid-template-columns: 1fr; gap: 17px; }
   .demo-dialog .lead-result { padding: 18px; }
   .demo-dialog .lead-email-actions > .button { width: 100%; }
+  .lead-service-options { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .lead-spinner { animation: none; } }

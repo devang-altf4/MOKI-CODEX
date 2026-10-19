@@ -1,8 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
-test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
-
 test('opening explains the offer, plays the supplied film, and renders without browser errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -46,7 +43,7 @@ test('all nine solutions are available and filtering shows the right services', 
 test('consultation form saves the request and retains an email draft with the selected service', async ({ page }) => {
   await page.route('**/api/leads', route => route.fulfill({ json: { saved: true } }));
   await page.goto('/contact?service=web-development');
-  await expect(page.getByLabel('What are you curious about?')).toHaveValue('web-development');
+  await expect(page.getByRole('checkbox', { name: 'Website development', exact: true })).toBeChecked();
   await page.getByLabel('Your name').fill('Preview Tester');
   await page.getByLabel('Work email').fill('tester@example.com');
   await page.getByLabel('Business name').fill('Example Business');

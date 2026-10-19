@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { saveMongoLead } from './leads-store.mjs';
 
-const services = new Set(['', 'ai-strategy', 'workflow-automation', 'ai-agents', 'data-bi', 'crm-sales', 'marketing-automation', 'industry-solutions', 'web-development', 'seo']);
+const services = new Set(['ai-strategy', 'workflow-automation', 'ai-agents', 'data-bi', 'crm-sales', 'marketing-automation', 'industry-solutions', 'web-development', 'seo']);
 const sources = new Set(['demo-popup', 'contact-page']);
 const unavailable = 'Your request could not be saved right now. Please retry, or use the email draft below.';
 
@@ -40,8 +40,11 @@ export function createLeadsHandler({ getConfig = () => process.env, saveLead = s
       if (!data || typeof data !== 'object' || Array.isArray(data)) throw Error('invalid');
     } catch { return send(400, { error: 'Please check the form and try again.' }); }
 
+    // Accept the previous single-service form while older browser tabs are still open.
+    const selectedServices = data.services === undefined && typeof data.service === 'string' ? (data.service ? [data.service] : []) : data.services;
+    if (!Array.isArray(selectedServices) || selectedServices.length > services.size || !selectedServices.every(value => typeof value === 'string' && services.has(value))) return send(400, { error: 'Please choose services from the available options, or leave them blank.' });
     const text = (key, max, min = 1) => typeof data[key] === 'string' && data[key].trim().length >= min && data[key].length <= max && !/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(data[key]);
-    if (!text('name', 120) || !text('email', 254) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()) || !text('company', 160) || !text('challenge', 4000, 15) || !services.has(data.service) || !sources.has(data.source) || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(data.requestId || '') || typeof data.website !== 'string' || data.website || typeof data.page !== 'string' || !/^\/[a-z0-9/-]{0,120}$/.test(data.page)) return send(400, { error: 'Add your name, a valid email, business name, and at least 15 characters about your challenge.' });
+    if (!text('name', 120) || !text('email', 254) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()) || !text('company', 160) || !text('challenge', 4000, 15) || !sources.has(data.source) || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(data.requestId || '') || typeof data.website !== 'string' || data.website || typeof data.page !== 'string' || !/^\/[a-z0-9/-]{0,120}$/.test(data.page)) return send(400, { error: 'Add your name, a valid email, business name, and at least 15 characters about your challenge.' });
     if (!config.MONGODB_URI) return send(503, { error: unavailable });
 
     const time = now();
@@ -53,7 +56,8 @@ export function createLeadsHandler({ getConfig = () => process.env, saveLead = s
     if (time >= windowEnd) { windowEnd = time + 60_000; count = 0; }
     if (visitor.count >= 8 || count >= 40 || active >= 4) { res.setHeader('Retry-After', '60'); return send(429, { error: 'Please wait a minute before trying again. You can also use the email draft below.' }); }
     visitors.set(ip, { ...visitor, count: visitor.count + 1 }); count++; active++;
-    const lead = Object.fromEntries(['name', 'email', 'company', 'challenge', 'service', 'source', 'page'].map(key => [key, data[key].trim()]));
+    const lead = Object.fromEntries(['name', 'email', 'company', 'challenge', 'source', 'page'].map(key => [key, data[key].trim()]));
+    lead.services = [...new Set(selectedServices)].sort();
     lead.email = lead.email.toLowerCase();
     lead.requestHash = createHash('sha256').update(JSON.stringify(lead)).digest('hex');
     lead.requestId = data.requestId.toLowerCase();

@@ -3,14 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Check, CheckCircle2, Copy, LoaderCircle, ShieldCheck } from 'lucide-react';
 import { EMAIL, services } from '../content';
 
-type Fields = { name: string; email: string; company: string; challenge: string; service: string; website: string };
+type Fields = { name: string; email: string; company: string; challenge: string; services: string[]; website: string };
 
-export function LeadForm({ source, initialService = '', initialChallenge = '', onSaved }: {
-  source: 'demo-popup' | 'contact-page'; initialService?: string; initialChallenge?: string; onSaved?: () => void;
+export function LeadForm({ source, initialService = '', initialChallenge = '' }: {
+  source: 'demo-popup' | 'contact-page'; initialService?: string; initialChallenge?: string;
 }) {
   const id = useId();
   const { pathname } = useLocation();
-  const [fields, setFields] = useState<Fields>({ name: '', email: '', company: '', challenge: initialChallenge, service: services.some(s => s.id === initialService) ? initialService : '', website: '' });
+  const [fields, setFields] = useState<Fields>({ name: '', email: '', company: '', challenge: initialChallenge, services: services.some(s => s.id === initialService) ? [initialService] : [], website: '' });
   const [busy, setBusy] = useState(false), [saved, setSaved] = useState(false);
   const [draft, setDraft] = useState(''), [error, setError] = useState(''), [copied, setCopied] = useState(false);
   const requestId = useRef('');
@@ -24,7 +24,7 @@ export function LeadForm({ source, initialService = '', initialChallenge = '', o
       result.current?.focus({ preventScroll: true });
     }
   }, [draft, busy]);
-  const update = (key: keyof Fields, value: string) => {
+  const update = <Key extends keyof Fields,>(key: Key, value: Fields[Key]) => {
     setFields(previous => ({ ...previous, [key]: value }));
     requestId.current = ''; setSaved(false); setDraft(''); setError(''); setCopied(false);
   };
@@ -34,8 +34,9 @@ export function LeadForm({ source, initialService = '', initialChallenge = '', o
     if (fields.website || !fields.name.trim() || !fields.company.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim()) || fields.challenge.trim().length < 15) {
       setError('Add your name, a valid email, business name, and at least 15 characters about your challenge.'); return;
     }
-    const service = services.find(s => s.id === fields.service)?.name || 'Help finding the right starting point';
-    const emailDraft = `Hello MOKI team,\n\nI’d like to arrange a free discovery call.\n\nName: ${fields.name.trim()}\nWork email: ${fields.email.trim()}\nBusiness: ${fields.company.trim()}\nInterested in: ${service}\n\nOur challenge:\n${fields.challenge.trim()}\n\nPlease let me know a good time to connect.\n\nThank you,\n${fields.name.trim()}`;
+    const selectedServices = services.filter(s => fields.services.includes(s.id)).map(s => s.name);
+    const interests = selectedServices.length ? selectedServices.join(', ') : 'Help finding the right starting point';
+    const emailDraft = `Hello MOKI team,\n\nI’d like to arrange a free discovery call.\n\nName: ${fields.name.trim()}\nWork email: ${fields.email.trim()}\nBusiness: ${fields.company.trim()}\nInterested in: ${interests}\n\nOur challenge:\n${fields.challenge.trim()}\n\nPlease let me know a good time to connect.\n\nThank you,\n${fields.name.trim()}`;
     setError(''); setBusy(true); setDraft('');
     const controller = new AbortController(); pending.current = controller;
     const timeout = window.setTimeout(() => controller.abort(), 25_000);
@@ -49,7 +50,6 @@ export function LeadForm({ source, initialService = '', initialChallenge = '', o
       const data = await response.json().catch(() => null);
       if (!response.ok || data?.saved !== true) throw Error(typeof data?.error === 'string' ? data.error : 'Your request could not be saved. Please retry, or use the email draft below.');
       setSaved(true);
-      onSaved?.();
     } catch (failure) {
       if (pending.current !== controller) return;
       setError(controller.signal.aborted ? 'The save could not be confirmed. Please retry, or use the email draft below.' : failure instanceof Error && failure.name === 'Error' ? failure.message : 'Your request could not be saved. Check your connection and retry, or use the email draft below.');
@@ -67,7 +67,17 @@ export function LeadForm({ source, initialService = '', initialChallenge = '', o
       <fieldset disabled={busy || saved}>
         <div className="form-two"><div><label htmlFor={`${id}-name`}>Your name <span>*</span></label><input id={`${id}-name`} name="name" autoComplete="name" value={fields.name} onChange={e => update('name', e.target.value)} placeholder="Alex Taylor" required maxLength={120} /></div><div><label htmlFor={`${id}-email`}>Work email <span>*</span></label><input id={`${id}-email`} name="email" type="email" autoComplete="email" value={fields.email} onChange={e => update('email', e.target.value)} placeholder="alex@yourbusiness.com" required maxLength={254} /></div></div>
         <div><label htmlFor={`${id}-company`}>Business name <span>*</span></label><input id={`${id}-company`} name="organization" autoComplete="organization" value={fields.company} onChange={e => update('company', e.target.value)} placeholder="Your business" required maxLength={160} /></div>
-        <div><label htmlFor={`${id}-service`}>What are you curious about?</label><select id={`${id}-service`} value={fields.service} onChange={e => update('service', e.target.value)}><option value="">Help me find the right starting point</option>{services.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+        <fieldset className="lead-service-picker" aria-describedby={`${id}-services-help`}>
+          <legend>What are you curious about?</legend>
+          <p className="lead-service-help" id={`${id}-services-help`}>Select all that apply. Not sure yet? Leave these blank and we’ll help you find a starting point.</p>
+          <div className="lead-service-options">{services.map(service => {
+            const checked = fields.services.includes(service.id);
+            return <label className={`lead-service-option${checked ? ' is-selected' : ''}`} key={service.id}>
+              <input type="checkbox" name="services" value={service.id} checked={checked} onChange={event => update('services', event.target.checked ? [...fields.services, service.id] : fields.services.filter(value => value !== service.id))} />
+              <span>{service.name}</span>
+            </label>;
+          })}</div>
+        </fieldset>
         <div><label htmlFor={`${id}-challenge`}>What could work better? <span>*</span></label><textarea id={`${id}-challenge`} value={fields.challenge} onChange={e => update('challenge', e.target.value)} rows={3} minLength={15} maxLength={4000} placeholder="Tell us about a process, a challenge, or an idea…" required /></div>
         <div className="honeypot" aria-hidden="true"><label htmlFor={`${id}-website`}>Leave this blank</label><input id={`${id}-website`} name="company_website" value={fields.website} onChange={e => update('website', e.target.value)} tabIndex={-1} autoComplete="off" /></div>
       </fieldset>
