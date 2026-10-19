@@ -1,0 +1,47 @@
+/* Shared client-approved lockup: the original blue faces stay the same in both themes. */
+.brand-lockup { --logo-height: 36px; display: inline-flex; align-items: center; gap: 10px; }
+.brand-lockup .brand-mark { height: var(--logo-height); width: calc(var(--logo-height) * 438 / 349); flex-shrink: 0; }
+.brand-lockup .brand-type { height: var(--logo-height); display: flex; flex-direction: column; justify-content: center; gap: calc(var(--logo-height) * .07); font-family: 'Manrope Variable',sans-serif; font-size: calc(var(--logo-height) * .7); font-weight: 750; line-height: 1; letter-spacing: -.7px; color: #2c5abc; }
+.brand-lockup .brand-name { display: block; line-height: 1; }
+.brand-lockup .brand-systems { display: block; margin: 0 0 0 1px; font-size: calc(var(--logo-height) * .16); line-height: 1; font-weight: 650; letter-spacing: calc(var(--logo-height) * .075); color: #2c5abc; }
+.concierge-header .brand-lockup { --logo-height: 32px; gap: 8px; }
+.footer-brand .brand-lockup { --logo-height: 38px; }
+
+/* Quiet, rounded actions; structural icons and diagram directions keep their purpose. */
+:root .button,
+.demo-dialog .lead-form .form-submit,
+.conversation-human > .button,
+:root .demo-menu-button,
+:root .concierge-primary,
+:root .concierge-secondary,
+:root .assistant-service { border-radius: 999px; }
+:root .button { justify-content: center; gap: 10px; padding-inline: 24px; transition: background .2s, border-color .2s, box-shadow .2s; }
+.hero-pin .hero-actions .button { justify-content: center; }
+:root .button:hover, :root .button:hover svg { transform: none; }
+:root .button-primary { box-shadow: 0 4px 14px #173b9812; }
+:root .button-primary:hover { box-shadow: 0 5px 18px #173b9820; }
+:root .button-outline { border-color: var(--line); background: var(--control); color: var(--ink); }
+:root .button-outline:hover { border-color: var(--blue); background: var(--tint); color: var(--blue); }
+.service-details .button, .industry-detail-copy .button, .about-copy .button { margin-top: 24px; }
+.section-heading-aside .button, .custom-note .button { white-space: normal; text-align: center; }
+.concierge-choices { padding-bottom: 20px; }
+.concierge-choices .concierge-choice { border-radius: 22px; padding: 15px 18px; }
+.concierge-primary > svg:last-child { margin-left: 0; }
+.service-filter > button { border-radius: 999px; }
+.contact-info > a { width: fit-content; }
+.site-header .mobile-nav > a.mobile-contact { border-radius: 999px; }
+.demo-footer-button { border-radius: 999px; padding: 10px 20px; border: 1px solid var(--line); background: var(--control); color: var(--ink); }
+.demo-footer-button:hover { border-color: var(--blue); color: var(--blue); }
+
+@media (max-width: 700px) {
+  .site-header .brand-lockup { --logo-height: 30px; gap: 8px; }
+  .concierge-header .brand-lockup { --logo-height: 30px; }
+  .service-filter > button { border-radius: 999px; }
+  :root .hero-actions .button { padding-inline: 20px; }
+}
+@media (max-width: 360px) {
+  .site-header .brand-lockup { --logo-height: 28px; gap: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .button { transition: none; }
+}

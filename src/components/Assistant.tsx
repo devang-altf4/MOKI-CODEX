@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUp, ArrowUpRight, Plus, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowUp, Plus, RotateCcw, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -60,8 +60,8 @@ export function AssistantPanel({ compact = false, active = true }: { compact?: b
     <div className="assistant-topbar"><span className="assistant-avatar"><Sparkles size={20} strokeWidth={1.5} /></span><div><strong>Moki AI</strong><span>Your business, understood.</span></div><span className="assistant-powered"><span className="status-dot" />GEMINI</span><button className="assistant-reset" onClick={() => { clear(); setDraft(''); }} aria-label="Start a new AI conversation"><RotateCcw size={15} /></button></div>
     <div className="assistant-messages" ref={log} role="log" aria-label="Conversation with Moki AI" aria-live="polite" aria-relevant="additions text" aria-busy={busy}>{messages.map((message, i) => {
       const service = services.find(service => service.id === message.service);
-      return <article className={`assistant-message message-${message.role}`} key={i}><span className="message-author">{message.role === 'assistant' ? 'MOKI' : 'YOU'}</span><p>{message.text}</p>{service && <Link className="assistant-service" to={`/solutions#${service.id}`}>{service.name}<ArrowUpRight size={14} /></Link>}</article>;
-    })}{busy && <div className="assistant-thinking" role="status"><span /><span /><span /><p>Thinking about your business…</p></div>}{error && <div className="assistant-error" role="alert"><p>{error}</p><Link to="/contact">Talk to the Moki team <ArrowUpRight size={13} /></Link></div>}</div>
+      return <article className={`assistant-message message-${message.role}`} key={i}><span className="message-author">{message.role === 'assistant' ? 'MOKI' : 'YOU'}</span><p>{message.text}</p>{service && <Link className="assistant-service" to={`/solutions#${service.id}`}>{service.name}</Link>}</article>;
+    })}{busy && <div className="assistant-thinking" role="status"><span /><span /><span /><p>Thinking about your business…</p></div>}{error && <div className="assistant-error" role="alert"><p>{error}</p><Link to="/contact">Talk to the Moki team </Link></div>}</div>
     {messages.length === 1 && !busy && <div className="assistant-prompts" aria-label="Conversation starters">{prompts.map(([label, prompt]) => <button key={label} onClick={() => { setDraft(prompt); }}><Plus size={12} />{label}</button>)}</div>}
     <form className="assistant-compose" onSubmit={submit}><label className="sr-only" htmlFor={id}>Your message to Moki AI</label><textarea id={id} value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="Tell us what could work better…" rows={2} maxLength={1800} disabled={busy} required /><button type="submit" disabled={busy || !draft.trim()} aria-label="Send message to Moki AI"><ArrowUp size={21} /></button></form>
     <div className="assistant-note"><span>AI guidance, with your business in mind.</span><p>Messages are sent to Google Gemini. Please leave out private customer details. <Link to="/privacy">Privacy</Link></p></div>

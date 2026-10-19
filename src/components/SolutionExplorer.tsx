@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowDown, ArrowUpRight, BrainCircuit, Check, Layers3, Mail } from 'lucide-react';
+import { ArrowDown, BrainCircuit, Check, Layers3, Mail } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { challenges } from '../content';
@@ -62,7 +62,7 @@ export default function SolutionExplorer() {
         else if (event.key === 'End') next = 3;
         else return;
         event.preventDefault(); select(next); document.getElementById(`challenge-tab-${next}`)?.focus({ preventScroll: true });
-      }}><span className="mono">0{index + 1}</span>{item.label}<ArrowUpRight size={16} /></button>)}</div>
+      }}><span className="mono">0{index + 1}</span>{item.label}</button>)}</div>
       <div id="challenge-panel" className="solution-story" role="tabpanel" aria-labelledby={`challenge-tab-${selected}`}>
         <div className="solution-story-copy" key={selected}><span className="tag">{challenge.tag}</span><h3>{challenge.title}</h3><p>{challenge.description}</p><ArrowLink to={`/solutions#${challenge.service}`}>See the solution</ArrowLink></div>
         <div className="solution-space"><span className="solution-giant-index" aria-hidden="true">0{selected + 1}</span><div className="solution-constellation"><svg className="solution-connections" viewBox="0 0 700 340" fill="none" aria-hidden="true"><path d="M90 210 C190 210 130 85 265 85 S360 265 440 265 S530 100 610 100" /><path className="solution-connection-live" d="M90 210 C190 210 130 85 265 85 S360 265 440 265 S530 100 610 100" style={{ strokeDashoffset: 1200 - selected * 270 }} /></svg><span className="solution-packet" aria-hidden="true" />{challenge.nodes.map((label, index) => { const Icon = icons[index]; return <div className={`solution-node solution-node-${index}`} key={index}><div className="solution-node-tile"><Icon size={36} strokeWidth={1.2} /><span className="node-edge" /><span className="node-dot" /></div><span className="solution-node-label">{label}</span></div>; })}</div><span className="solution-scene-caption"><span className="status-dot" />ILLUSTRATIVE WORKFLOW / 0{selected + 1}</span></div>

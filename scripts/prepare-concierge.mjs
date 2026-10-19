@@ -3,9 +3,10 @@ import { promisify } from 'node:util';
 import { mkdir } from 'node:fs/promises';
 
 const run = promisify(execFile);
-const source = 'assets-src/concierge/moki-welcome.mp4';
-const film = 'public/videos/concierge/moki-welcome.mp4';
-const poster = 'public/images/concierge/moki-welcome.webp';
+const name = 'moki-welcome-woman';
+const source = `assets-src/concierge/${name}.mp4`;
+const film = `public/videos/concierge/${name}.mp4`;
+const poster = `public/images/concierge/${name}.webp`;
 await mkdir('public/videos/concierge', { recursive: true });
 await mkdir('public/images/concierge', { recursive: true });
 // A small card needs no more than 720px. Keep the source frame timing and colour;

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowUpRight, CalendarDays, ChevronRight, Home, Mail, MessageCircle, Pause, Play, Sparkles, UsersRound, X } from 'lucide-react';
+import { CalendarDays, Home, Mail, MessageCircle, Pause, Play, Sparkles, UsersRound, X } from 'lucide-react';
 import { EMAIL } from '../content';
 import Logo from './Logo';
 
-const welcomeFilm = '/videos/concierge/moki-welcome.mp4';
-const welcomePoster = '/images/concierge/moki-welcome.webp';
+const welcomeFilm = '/videos/concierge/moki-welcome-woman.mp4';
+const welcomePoster = '/images/concierge/moki-welcome-woman.webp';
 
 function WelcomeMedia({ active, paused = false }: { active: boolean; paused?: boolean }) {
   const video = useRef<HTMLVideoElement>(null);
@@ -60,7 +60,7 @@ export function ConciergeWidget({ open, onOpenChange, children }: { open: boolea
     <div className={`concierge-dock ${open ? 'dock-hidden' : ''} ${minimized ? 'dock-compact' : ''}`}>
       <button ref={launcher} className="assistant-launcher concierge-launcher" aria-label="Open Moki chat and contact" aria-haspopup="dialog" aria-expanded={open} onClick={() => onOpenChange(true)}>
         <WelcomeMedia active={!open} />
-        <span className="concierge-launcher-eyebrow">MOKI</span><span className="concierge-launcher-caption"><MessageCircle size={15} />Let’s talk<ChevronRight size={15} /></span>
+        <span className="concierge-launcher-eyebrow">MOKI</span><span className="concierge-launcher-caption"><MessageCircle size={15} />Let’s talk</span>
       </button>
       {!minimized && <button className="concierge-minimize" aria-label="Minimize video greeting" onClick={() => setMinimized(true)}><X size={12} /></button>}
     </div>
@@ -72,12 +72,12 @@ export function ConciergeWidget({ open, onOpenChange, children }: { open: boolea
           <div id="concierge-welcome" className="concierge-view" hidden={view !== 'welcome'}>
             <div className="concierge-welcome-film"><WelcomeMedia active={view === 'welcome'} paused={videoPaused} /><span className="concierge-film-tag">WELCOME VIDEO</span><div className="concierge-film-copy"><h3>Big ideas.<br />Start here.</h3><span>Welcome to MOKI.</span></div><button className="concierge-video-toggle" aria-label={videoPaused ? 'Play greeting' : 'Pause greeting'} onClick={() => setVideoPaused(!videoPaused)}>{videoPaused ? <Play size={15} /> : <Pause size={15} />}</button></div>
             <div className="concierge-welcome-copy"><h3>What’s on your mind?</h3><p>A question, an idea, or a process that could work better. Let’s find your next step.</p></div>
-            <div className="concierge-choices"><button className="concierge-choice" onClick={() => setView('ai')}><span className="concierge-choice-icon"><Sparkles size={20} /></span><span><strong>Ask MOKI AI</strong><small>Explore ideas for your business</small></span><ArrowUpRight size={18} /></button><button className="concierge-choice" onClick={() => setView('team')}><span className="concierge-choice-icon"><UsersRound size={20} /></span><span><strong>Talk to our team</strong><small>Let’s turn an idea into a plan</small></span><ArrowUpRight size={18} /></button></div>
+            <div className="concierge-choices"><button className="concierge-choice" onClick={() => setView('ai')}><span className="concierge-choice-icon"><Sparkles size={20} /></span><span><strong>Ask MOKI AI</strong><small>Explore ideas for your business</small></span></button><button className="concierge-choice" onClick={() => setView('team')}><span className="concierge-choice-icon"><UsersRound size={20} /></span><span><strong>Talk to our team</strong><small>Let’s turn an idea into a plan</small></span></button></div>
           </div>
           <div id="concierge-ai" className="concierge-view concierge-ai" hidden={view !== 'ai'}>{children(view === 'ai')}</div>
           <div id="concierge-team" className="concierge-view concierge-team" hidden={view !== 'team'}>
             <span className="concierge-team-symbol"><UsersRound size={30} strokeWidth={1.3} /></span><span className="concierge-kicker">PEOPLE BEHIND THE POSSIBILITIES</span><h3>Your business.<br />Let’s talk about it.</h3><p>Tell us what you’re working on. We’ll explore where AI, automation, or a better website could help.</p>
-            <Link className="concierge-primary" to="/contact"><CalendarDays size={18} />Book a discovery call<ArrowUpRight size={17} /></Link><a className="concierge-email" href={`mailto:${EMAIL}`}><Mail size={17} /><span>{EMAIL}</span><ArrowUpRight size={15} /></a>
+            <Link className="concierge-primary" to="/contact"><CalendarDays size={18} />Book a discovery call</Link><a className="concierge-email" href={`mailto:${EMAIL}`}><Mail size={17} /><span>{EMAIL}</span></a>
             <div className="concierge-availability"><span className="concierge-availability-dot" /><div><strong>Discovery calls by appointment</strong><p>South Florida · Working worldwide</p></div></div>
           </div>
         </div>
