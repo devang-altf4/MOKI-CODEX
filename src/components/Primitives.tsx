@@ -6,6 +6,7 @@ export function ArrowLink({ to, children, className = '' }: { to: string; childr
   return <Link to={to} className={`button ${to.startsWith('/contact') ? 'button-primary' : 'button-outline'} ${className}`}><span>{children}</span></Link>;
 }
 export function Button({ to, children, variant = 'primary', className = '' }: { to: string; children: ReactNode; variant?: 'primary' | 'outline' | 'light'; className?: string }) {
+  if (/^https?:\/\//.test(to)) return <a href={to} className={`button button-${variant} ${className}`}><span>{children}</span></a>;
   return <Link to={to} className={`button button-${variant} ${className}`}><span>{children}</span></Link>;
 }
 export function Eyebrow({ children, light = false }: { children: ReactNode; light?: boolean }) {

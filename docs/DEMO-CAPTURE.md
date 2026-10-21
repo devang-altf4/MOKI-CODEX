@@ -1,16 +1,19 @@
-# Demo request capture
+# Contact enquiries and Calendly booking
 
 The owner authorized release on 2026-10-18 after removal of the simulated call.
 Configure and verify the hosted MongoDB connection before promoting the release.
 
 ## Visitor flow
 
-- The invitation opens only when the visitor clicks Request a demo. There is no
-  automatic timer, repeat invitation, or popup session flag.
-- Desktop navigation, the phone menu, and the footer have a Request a demo button
-  to reopen it. Escape, the close button, or an outside click dismisses it.
-- Both the popup and contact page save through the same `/api/leads` endpoint.
-- Visitors can check multiple services in either form. Leaving every option
+- Existing Request a demo and discovery-call buttons open
+  `https://calendly.com/mohak-mokisystems/30min` in the same tab. Navigation,
+  footer, homepage and concierge booking actions share this URL. The demo
+  invitation dialog has been replaced by these direct links, with no automatic
+  popup, extra booking buttons, embedded calendar or Calendly scripts.
+- Visitors choose their appointment and enter their details on Calendly.
+  Bookings are handled there; no calendar API or automatic MongoDB sync is used.
+- The contact enquiry form still saves through `/api/leads`.
+- Visitors can check multiple services in that form. Leaving every option
   unchecked means they would like help finding a starting point. Every chosen
   service is included in the saved `services` array and optional email draft.
 - Success is shown only after MongoDB acknowledges the save. A saved enquiry is

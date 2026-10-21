@@ -1,8 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-// The timed lead popup has dedicated coverage; keep other journeys uninterrupted.
-test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { sessionStorage.setItem('moki-demo-seen', '1'); } catch { /* Storage may be disabled in this test. */ } }); });
-
 test('combined widget keeps AI drafts and history when switching views and closes on navigation', async ({ page }) => {
   await page.route('**/api/chat', route => route.fulfill({ json: { reply: 'We can connect your website to a useful enquiry workflow.', service: 'web-development' } }));
   await page.goto('/');
@@ -36,10 +33,10 @@ test('launch widget exposes real chat and team contact without a simulated call'
   await expect(dialog.getByRole('link', { name: 'mohak@mokisystems.us' })).toHaveAttribute('href', 'mailto:mohak@mokisystems.us');
   await expect(dialog.getByRole('button', { name: /demo call/i })).toHaveCount(0);
   await expect(dialog.locator('.concierge-team-demo')).toHaveCount(0);
-  await dialog.getByRole('link', { name: 'Book a discovery call' }).click();
-  await expect(page).toHaveURL(/contact/);
+  await expect(dialog.getByRole('link', { name: 'Book a discovery call' })).toHaveAttribute('href', 'https://calendly.com/mohak-mokisystems/30min');
+  await dialog.getByRole('button', { name: 'Close Moki chat and contact' }).click();
   await expect(dialog).not.toBeVisible();
-  await expect(page.getByRole('button', { name: 'Request my discovery call' })).toBeVisible();
+  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
 });
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {

@@ -3,7 +3,7 @@ import { ArrowUp, Plus, RotateCcw, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { services } from '../content';
+import { CALENDLY_URL, services } from '../content';
 import { Button, Eyebrow } from './Primitives';
 import { ConciergeWidget } from './Concierge';
 import '../assistant.css';
@@ -84,7 +84,7 @@ export function ConversationSection() {
     }, root);
     return () => mm.revert();
   }, []);
-  return <section className="conversation-section" id="experience" ref={root}><div className="conversation-watermark" aria-hidden="true">LET’S TALK.</div><div className="conversation-orbit" aria-hidden="true"><i /><i /><span>✳</span></div><div className="container conversation-layout"><div className="conversation-copy"><Eyebrow>LESS GUESSING. MORE POSSIBILITIES.</Eyebrow><h2><span>YOUR NEXT</span><span>MOVE STARTS</span><span>with a hello.</span></h2><p>No perfect brief needed. Tell our AI guide what’s slowing you down. Find the possibilities, then talk them through with our team.</p><div className="conversation-human"><span className="status-dot" /><span>AI TO EXPLORE.<br /><strong>REAL PEOPLE TO BUILD IT.</strong></span><Button to="/contact">Book a discovery call</Button></div></div><div className="conversation-console"><AssistantPanel /></div></div></section>;
+  return <section className="conversation-section" id="experience" ref={root}><div className="conversation-watermark" aria-hidden="true">LET’S TALK.</div><div className="conversation-orbit" aria-hidden="true"><i /><i /><span>✳</span></div><div className="container conversation-layout"><div className="conversation-copy"><Eyebrow>LESS GUESSING. MORE POSSIBILITIES.</Eyebrow><h2><span>YOUR NEXT</span><span>MOVE STARTS</span><span>with a hello.</span></h2><p>No perfect brief needed. Tell our AI guide what’s slowing you down. Find the possibilities, then talk them through with our team.</p><div className="conversation-human"><span className="status-dot" /><span>AI TO EXPLORE.<br /><strong>REAL PEOPLE TO BUILD IT.</strong></span><Button to={CALENDLY_URL}>Book a discovery call</Button></div></div><div className="conversation-console"><AssistantPanel /></div></div></section>;
 }
 
 export function AssistantWidget() {
