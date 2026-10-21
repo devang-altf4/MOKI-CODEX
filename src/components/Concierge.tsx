@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { CalendarDays, Home, Mail, MessageCircle, Pause, Play, Sparkles, UsersRound, X } from 'lucide-react';
-import { EMAIL } from '../content';
+import { CALENDLY_URL, EMAIL } from '../content';
 import Logo from './Logo';
 
 const welcomeFilm = '/videos/concierge/moki-welcome-woman-wide.mp4';
@@ -77,7 +77,7 @@ export function ConciergeWidget({ open, onOpenChange, children }: { open: boolea
           <div id="concierge-ai" className="concierge-view concierge-ai" hidden={view !== 'ai'}>{children(view === 'ai')}</div>
           <div id="concierge-team" className="concierge-view concierge-team" hidden={view !== 'team'}>
             <span className="concierge-team-symbol"><UsersRound size={30} strokeWidth={1.3} /></span><span className="concierge-kicker">PEOPLE BEHIND THE POSSIBILITIES</span><h3>Your business.<br />Let’s talk about it.</h3><p>Tell us what you’re working on. We’ll explore where AI, automation, or a better website could help.</p>
-            <Link className="concierge-primary" to="/contact"><CalendarDays size={18} />Book a discovery call</Link><a className="concierge-email" href={`mailto:${EMAIL}`}><Mail size={17} /><span>{EMAIL}</span></a>
+            <a className="concierge-primary" href={CALENDLY_URL}><CalendarDays size={18} />Book a discovery call</a><a className="concierge-email" href={`mailto:${EMAIL}`}><Mail size={17} /><span>{EMAIL}</span></a>
             <div className="concierge-availability"><span className="concierge-availability-dot" /><div><strong>Discovery calls by appointment</strong><p>South Florida · Working worldwide</p></div></div>
           </div>
         </div>

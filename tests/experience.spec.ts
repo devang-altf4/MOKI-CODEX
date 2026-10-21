@@ -91,9 +91,7 @@ test('the opening keeps its film and clear calls to action without presentation 
   await expect(page.getByRole('link', { name: 'SCROLL TO CONNECT' })).toHaveCount(0);
   await expect(page.locator('.site-header .brand-type')).toHaveText('MOKISYSTEMS');
   await expect(page.locator('.nav-cta')).toHaveCSS('background-color', 'rgb(36, 88, 207)');
-  await page.locator('.hero-actions').getByRole('link', { name: 'Book a free discovery call' }).click();
-  await expect(page).toHaveURL(/contact/);
-  await expect(page.getByLabel('Your name')).toBeVisible();
+  await expect(page.locator('.hero-actions').getByRole('link', { name: 'Book a free discovery call' })).toHaveAttribute('href', 'https://calendly.com/mohak-mokisystems/30min');
 });
 
 test('reduced motion uses a still and compact sections', async ({ page }) => {

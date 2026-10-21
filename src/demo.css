@@ -42,7 +42,7 @@
 .demo-dialog .form-error { font-size: 13px; line-height: 1.6; color: #bd3340; }
 :root[data-theme="dark"] .demo-dialog .form-error { color: #ffacb6; }
 .demo-footer-button { margin-top: 16px; background: transparent; color: var(--blue); padding: 8px 0; display: flex; width: fit-content; align-items: center; gap: 12px; min-height: 44px; font-size: 14px; }
-.demo-menu-button { margin-top: 20px; padding: 18px; width: 100%; display: flex; align-items: center; justify-content: space-between; border-radius: 10px; background: #2458cf; color: #fff; font-size: 16px; font-weight: 600; text-align: left; }
+.site-header .mobile-nav > a.demo-menu-button { margin-top: 20px; padding: 18px; width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: #2458cf; color: #fff; font: 600 16px/1.5 'Manrope Variable',sans-serif; letter-spacing: normal; text-align: center; }
 .lead-form .lead-service-picker { display: block; }
 .lead-service-picker legend { padding: 0; color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.5; }
 .lead-service-help { margin: 7px 0 12px; color: var(--copy); font-size: 12px; line-height: 1.6; }

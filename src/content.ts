@@ -1,4 +1,5 @@
 export const EMAIL = 'mohak@mokisystems.us';
+export const CALENDLY_URL = 'https://calendly.com/mohak-mokisystems/30min';
 
 export const services = [
   { id: 'ai-strategy', name: 'AI consulting & strategy', short: 'A clear place to start.', description: 'Find where AI can actually help your business. We assess your workflows, choose practical opportunities, and build a plan around your goals.', examples: ['AI readiness assessments', 'Technology recommendations', 'Implementation roadmaps'], group: 'Intelligence' },
