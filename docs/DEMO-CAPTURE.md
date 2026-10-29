@@ -40,9 +40,21 @@ does not store the visitor's IP, browser fingerprint, or chat transcript.
 New enquiries use a `services` array; existing documents retain their previous
 single `service` field. The API still accepts older single-service form requests.
 
-To view entries, open Atlas **Browse Collections → moki → demo_requests**. Atlas
-stores these enquiries in MongoDB; no automatic Excel sync or email delivery
-is connected by this change.
+To view entries, open Atlas **Browse Collections → moki → demo_requests**, or use
+the leads Google Sheet below. No email delivery is connected.
+
+## Leads Google Sheet
+
+`GET /api/leads-export` returns every saved enquiry (newest first, without the
+internal request hash) as JSON. It is closed unless `LEADS_EXPORT_TOKEN` (32+
+random characters, server-only) is set on Vercel, and it answers only requests
+that send `Authorization: Bearer <token>`; anything else gets 401 and never
+touches the database.
+
+`scripts/google-sheet-leads.gs` is the Apps Script for the sheet: set `FEED_URL`,
+add the same token as a Script property, run `installAutoSync` once. The Leads tab
+then refreshes every 15 minutes, oldest first, so notes in column K onwards stay
+aligned. Rotate the token by changing it on Vercel and in the Script property.
 
 ## Before an approved release
 
