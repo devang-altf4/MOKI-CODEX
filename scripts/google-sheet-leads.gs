@@ -1,12 +1,11 @@
 /**
  * MOKI leads → Google Sheet. Paste into Extensions → Apps Script of the sheet.
- * 1. Set FEED_URL to the live site.
- * 2. Project Settings → Script properties → add LEADS_EXPORT_TOKEN (same value as on Vercel).
- * 3. Run installAutoSync once and allow access. The "Leads" tab then refreshes every 15 minutes.
+ * 1. Project Settings → Script properties → add LEADS_EXPORT_TOKEN (same value as on Vercel).
+ * 2. Run installAutoSync once and allow access. The "Leads" tab then refreshes every 15 minutes.
  * Leads are listed oldest first, so a new lead always lands at the bottom and your own notes
  * in column K onwards stay on the right row. Columns A–J are rewritten on every sync.
  */
-const FEED_URL = 'https://YOUR-SITE/api/leads-export';
+const FEED_URL = 'https://www.mokisystems.us/api/leads-export';
 const SHEET_NAME = 'Leads';
 const HEADERS = ['Received', 'Name', 'Email', 'Company', 'Services', 'Challenge', 'Source', 'Page', 'Status', 'Reference'];
 

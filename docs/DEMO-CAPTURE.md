@@ -51,7 +51,7 @@ random characters, server-only) is set on Vercel, and it answers only requests
 that send `Authorization: Bearer <token>`; anything else gets 401 and never
 touches the database.
 
-`scripts/google-sheet-leads.gs` is the Apps Script for the sheet: set `FEED_URL`,
+`scripts/google-sheet-leads.gs` is the Apps Script for the sheet (pointed at www.mokisystems.us):
 add the same token as a Script property, run `installAutoSync` once. The Leads tab
 then refreshes every 15 minutes, oldest first, so notes in column K onwards stay
 aligned. Rotate the token by changing it on Vercel and in the Script property.
