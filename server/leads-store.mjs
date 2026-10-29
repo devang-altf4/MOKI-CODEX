@@ -43,3 +43,31 @@ export function createMongoLeadStore() {
 }
 
 export const saveMongoLead = createMongoLeadStore();
+
+// Read side for the owner's leads export: newest first, internal hashes left out.
+export function createMongoLeadReader() {
+  let client, connecting, currentUri;
+  return async function listLeads(config, limit) {
+    const uri = config.MONGODB_URI;
+    if (!uri?.startsWith('mongodb+srv://') && !uri?.startsWith('mongodb://')) throw Error('Database unavailable');
+    const database = config.MONGODB_DATABASE || 'moki';
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(database)) throw Error('Database unavailable');
+    if (!connecting || currentUri !== uri) {
+      if (client) await client.close().catch(() => {});
+      currentUri = uri;
+      client = new MongoClient(uri, { maxPoolSize: 2, minPoolSize: 0, maxIdleTimeMS: 60_000, serverSelectionTimeoutMS: 8000, connectTimeoutMS: 8000, socketTimeoutMS: 10_000 });
+      const pendingClient = client;
+      connecting = client.connect().catch(async error => {
+        if (client === pendingClient) connecting = undefined;
+        await pendingClient.close().catch(() => {});
+        throw error;
+      });
+    }
+    const connected = await connecting;
+    return connected.db(database).collection('demo_requests')
+      .find({}, { projection: { requestHash: 0 }, sort: { createdAt: -1 }, limit, maxTimeMS: 8000 })
+      .toArray();
+  };
+}
+
+export const listMongoLeads = createMongoLeadReader();
