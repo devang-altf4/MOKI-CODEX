@@ -1,4 +1,14 @@
-# Moki Systems
+# MOKI Systems
+
+## Current production release: the Possibility Engine
+
+The approved homepage lives in `site/`: an original scroll-controlled Three.js journey, five project previews, nine solutions, an enquiry form and the existing video greeting / AI guide. It uses the supplied Calendly booking URL and the existing same-origin `/api/chat` and `/api/leads` handlers. Enquiries support multiple services, save to MongoDB before showing success, retain an optional email draft and reuse the same request ID on unchanged retries. There is no timed enquiry popup and no simulated calling.
+
+Run `npm ci`, `npm run test:server` and `npm run build`. Then run `npm run preview` to test the assembled production site with the existing server-only variables in `.env.local`. The build first compiles the React inner pages, saves their entry as `dist/legacy.html`, and publishes `site/` at the root. Vercel retains existing `/solutions`, `/how-it-works`, `/industries`, `/about`, `/contact` and `/privacy` addresses through that legacy entry; all API and export handlers stay unchanged. `npm run dev` still serves the original React application for inner-page maintenance.
+
+The original approved exploration remains local in `moki-next/`. It is not part of the production build. No environment values, customer records or backup archives belong in Git. Existing production environment settings and the protected lead export for Google Sheets remain in place.
+
+See `docs/PRODUCTION-ROLLBACK.md` for the previous deployment, GitHub backup branch and verified offline backups. The notes below describe the retained original React pages and integrations.
 
 A cinematic business website with scroll-driven 3D scenes, expressive typography, an interactive solutions walkthrough, and a Gemini assistant.
 

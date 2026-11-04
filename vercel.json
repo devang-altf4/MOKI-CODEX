@@ -16,8 +16,12 @@
   },
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/legacy.html"
     }
   ]
 }
