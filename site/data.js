@@ -43,5 +43,5 @@ export const faqs = [
   ['What does a project cost?', 'Every business and workflow is different. After understanding the scope, integrations, and support you need, we provide a custom quote. The discovery call is free.'],
   ['How long does implementation take?', 'It depends on the work involved. We agree on a clear scope and timeline with you after the discovery stage, before implementation starts.'],
   ['Do you offer support after launch?', 'Yes. We aim to be a long-term technology partner. Ongoing maintenance, support, and improvements can be part of your engagement.'],
-  ['Can we work together outside Florida?', 'Yes. MOKI Systems is based in South Florida and works remotely with businesses in India and internationally.'],
+  ['Can we work together outside Florida?', 'Yes. MOKI Systems is based in Brickell, Miami and works remotely with businesses in India and internationally.'],
 ];

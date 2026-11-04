@@ -78,7 +78,7 @@ export function ConciergeWidget({ open, onOpenChange, children }: { open: boolea
           <div id="concierge-team" className="concierge-view concierge-team" hidden={view !== 'team'}>
             <span className="concierge-team-symbol"><UsersRound size={30} strokeWidth={1.3} /></span><span className="concierge-kicker">PEOPLE BEHIND THE POSSIBILITIES</span><h3>Your business.<br />Let’s talk about it.</h3><p>Tell us what you’re working on. We’ll explore where AI, automation, or a better website could help.</p>
             <a className="concierge-primary" href={CALENDLY_URL}><CalendarDays size={18} />Book a discovery call</a><a className="concierge-email" href={`mailto:${EMAIL}`}><Mail size={17} /><span>{EMAIL}</span></a>
-            <div className="concierge-availability"><span className="concierge-availability-dot" /><div><strong>Discovery calls by appointment</strong><p>South Florida · Working worldwide</p></div></div>
+            <div className="concierge-availability"><span className="concierge-availability-dot" /><div><strong>Discovery calls by appointment</strong><p>Brickell, Miami · Working worldwide</p></div></div>
           </div>
         </div>
         <footer className="concierge-footer"><span><span className="concierge-footer-dot" />MOKI SYSTEMS</span><span>Smarter systems. Simpler business.</span></footer>
