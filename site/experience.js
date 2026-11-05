@@ -100,6 +100,7 @@ const projects=[
   {name:'ALTIMATE',type:'Interior design & build',url:'https://altimate-demo.vercel.app/',image:'altimate'},
   {name:'Bellavierre',type:'Luxury real estate',url:'https://bellavierre-demo.vercel.app/',image:'bellavierre'},
   {name:'Dayaar Real Estate',type:'Property discovery & consulting',url:'https://dayaarrealestate.com/',image:'dayaar'},
+  {name:'Alamera Properties',type:'Dubai real estate & property discovery',url:'https://alameraproperties-demo.vercel.app/',image:'alamera'},
 ];
 function renderProjects(){
   if($('#projects-grid').childElementCount)return;
